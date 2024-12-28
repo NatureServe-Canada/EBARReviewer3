@@ -1,7 +1,8 @@
 import { React, type AllWidgetProps, JimuMapViewStatus } from 'jimu-core'
 import { type JimuMapView, JimuMapViewComponent, type JimuLayerView } from 'jimu-arcgis'
-import { type Taxon, type Specie } from './types'
+import { type Taxon, type Specie, type SpecieFeedback } from './types'
 import SpeciesOverview from './species-overview'
+import OverallFeedback from './overall-feedback'
 import { useEffect } from 'react'
 
 const nslogo = require('../assets/ns_canada.png')
@@ -13,8 +14,12 @@ const nslogo = require('../assets/ns_canada.png')
 const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const [jimuMapView, setJimuMapView] = React.useState<JimuMapView>(null)
   const [mapLayers, setMapLayers] = React.useState<JimuLayerView[]>([])
+  const [allTables, setAllTables] = React.useState<__esri.Collection<__esri.Layer>>(null)
   const [taxa, setTaxa] = React.useState<Taxon[]>([])
   const [activeSpecie, setActiveSpecie] = React.useState<Specie>(null)
+  const [displaySpeciesOverview, setDisplaySpeciesOverview] = React.useState<boolean>(true)
+  const [displayOverallFeedback, setDisplayOverallFeedback] = React.useState<boolean>(false)
+  const [specieFeedback, setSpecieFeedback] = React.useState<SpecieFeedback>(null)
 
   useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded) {
@@ -27,10 +32,12 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       }
 
       const tables = jimuMapView?.view.map.allTables
+      setAllTables(tables)
       const speciesTable = tables.find(x => x.title === 'ReviewerApp2C - ReviewRangeMapSpecies') as __esri.FeatureLayer
       speciesTable.queryFeatures({
         where: `username='${props.user.username}' and includeinebarreviewer=1`,
-        outFields: ['Username', 'ReviewID', 'RangeMapID', 'RangeVersion', 'RangeStage', 'RangeMetadata', 'RangeMapNotes', 'RangeMapScope', 'TAX_GROUP', 'NATIONAL_SCIENTIFIC_NAME', 'NSX_URL', 'DifferentiateUsageType']
+        outFields: ['Username', 'ReviewID', 'RangeMapID', 'RangeVersion', 'RangeStage', 'RangeMetadata', 'RangeMapNotes',
+          'RangeMapScope', 'TAX_GROUP', 'NATIONAL_SCIENTIFIC_NAME', 'NSX_URL', 'DifferentiateUsageType']
       }).then((results) => {
         if (Array.isArray(results.features) && results.features.length !== 0) {
           const tempTaxa: Taxon[] = []
@@ -66,6 +73,31 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
     }
   }, [jimuMapView, props.user.username])
 
+  useEffect(() => {
+    if (activeSpecie && allTables) {
+      const reviewTable = allTables.find(x => x.title === 'ReviewerApp2C - Review') as __esri.FeatureLayer
+      reviewTable.queryFeatures({
+        where: `reviewid=${activeSpecie.reviewID} and rangeMapID=${activeSpecie.rangeMapID}`,
+        outFields: ['*']
+      }).then((results) => {
+        if (Array.isArray(results.features) && results.features.length !== 0) {
+          const specieFeedback: SpecieFeedback = {
+            reviewID: activeSpecie.reviewID,
+            rangeMapID: activeSpecie.rangeMapID,
+            objectID: results.features[0].attributes.objectid,
+            reviewNotes: results.features[0].attributes.reviewnotes,
+            dateStarted: results.features[0].attributes.datestarted ? results.features[0].attributes.datestarted : new Date().getTime(),
+            dateCompleted: results.features[0].attributes.datecompleted,
+            overallStarRating: results.features[0].attributes.overallstarrating
+          }
+          setSpecieFeedback(specieFeedback)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    }
+  }, [activeSpecie, allTables])
+
   if (!props.useMapWidgetIds || props.useMapWidgetIds.length === 0) {
     return <div>Please select a map widget</div>
   }
@@ -78,6 +110,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   }
 
   return (
+    // style={{ backgroundColor: props.theme?.sys.color.secondary.light}}
     <div className="jimu-widget">
       <JimuMapViewComponent
         onActiveViewChange={onActiveViewChange}
@@ -95,12 +128,29 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
             <img src={nslogo} alt='NS Logo' style={{ height: '4rem' }} />
           </div>
         </div>
-        <div className='row my-2'>
-          <SpeciesOverview taxa={taxa} setActiveSpecie={setActiveSpecie}/>
-        </div>
+        {displaySpeciesOverview && (
+          <SpeciesOverview
+            taxa={taxa}
+            setActiveSpecie={setActiveSpecie}
+            activeSpecie={activeSpecie}
+            setDisplayOverallFeedback={setDisplayOverallFeedback}
+            setDisplaySpeciesOverview={setDisplaySpeciesOverview}
+          />
+        )}
+        {displayOverallFeedback && (
+          <OverallFeedback
+            activeSpecie={activeSpecie}
+            setDisplayOverallFeedback={setDisplayOverallFeedback}
+            setDisplaySpeciesOverview={setDisplaySpeciesOverview}
+            specieFeedback={specieFeedback}
+            setSpecieFeedback={setSpecieFeedback}
+            allTables={allTables}
+          />
+        )}
         <div className='row my-2'>
           <div className='col'>
-            <h2>{activeSpecie?.name}</h2>
+            {!displayOverallFeedback && <span>False</span>}
+            {displayOverallFeedback && <span>True</span>}
           </div>
         </div>
       </div>

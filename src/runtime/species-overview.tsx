@@ -1,8 +1,16 @@
 import React from 'react'
-import { Select, Option } from 'jimu-ui'
+import { Select, Option, Button } from 'jimu-ui'
 import { type Taxon, type Specie } from './types'
+import defaultMessages from './translations/default'
 
-export default function SpeciesOverview(props: { taxa: Taxon[], setActiveSpecie: (specie: Specie) => void }) {
+export default function SpeciesOverview(props: {
+  taxa: Taxon[]
+  activeSpecie: Specie
+  setActiveSpecie: (specie: Specie) => void
+  setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
+  setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
+
+}) {
   function handleSelectChange(e: any) {
     const selectedSpecieName = e.target.value
     // find the selected specie
@@ -10,11 +18,16 @@ export default function SpeciesOverview(props: { taxa: Taxon[], setActiveSpecie:
     const selectedSpecie = selectedTaxon.species.find(specie => specie.name === selectedSpecieName)
     props.setActiveSpecie(selectedSpecie)
   }
+
+  function handleOverallFeedback() {
+    props.setDisplaySpeciesOverview(false)
+    props.setDisplayOverallFeedback((prev: boolean) => !prev)
+  }
   return (
     <div className='container'>
       <div className='row'>
         <div className='col'>
-          <Select placeholder='Select a specie' onChange={handleSelectChange}>
+          <Select placeholder={defaultMessages.selectSpecies} onChange={handleSelectChange}>
             {props.taxa.map((group, groupIndex) => {
               // Generate header and items
               const groupElements = [
@@ -38,9 +51,23 @@ export default function SpeciesOverview(props: { taxa: Taxon[], setActiveSpecie:
               return groupElements
             })}
           </Select>
-
         </div>
       </div>
+      {props.activeSpecie && (
+        <div className='container mt-2'>
+          <div className='row'><div className='col'><b>{defaultMessages.rangeVersion}:</b> {props.activeSpecie.rangeVersion}</div></div>
+          <div className='row'><div className='col'><b>{defaultMessages.rangeStage}:</b> {props.activeSpecie.rangeStage}</div></div>
+          <div className='row'><div className='col'><b>{defaultMessages.rangeScope}:</b> {props.activeSpecie.rangeMapScope}</div></div>
+          <div className='row'>
+            <div className='col'><b>{defaultMessages.speciesInformation}:</b> <a href={props.activeSpecie.nsxUrl} target="_blank" rel="noopener noreferrer">{defaultMessages.gotoNSExplorer}</a></div>
+          </div>
+          <div className='row'><div className='col'><b>{defaultMessages.metadata}:</b> {props.activeSpecie.rangeMetadata}</div></div>
+          <div className='row'>
+            <div className='col'><Button onClick={handleOverallFeedback}>{defaultMessages.overallFeedback}</Button></div>
+          </div>
+        </div>
+      )
+      }
     </div>
   )
 }
