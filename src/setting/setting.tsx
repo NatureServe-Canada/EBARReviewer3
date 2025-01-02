@@ -1,4 +1,4 @@
-import React from 'react'
+import { React } from 'jimu-core'
 import { type AllWidgetSettingProps } from 'jimu-for-builder'
 import { MapWidgetSelector } from 'jimu-ui/advanced/setting-components'
 

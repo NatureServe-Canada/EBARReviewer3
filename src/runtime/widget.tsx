@@ -1,4 +1,4 @@
-import { React, type AllWidgetProps, JimuMapViewStatus } from 'jimu-core'
+import { React, type AllWidgetProps, JimuMapViewStatus, DataSourceManager, DataSourceComponent, DataSource, QueriableDataSource, IFeatureLayer, SqlQueryParams } from 'jimu-core'
 import { type JimuMapView, JimuMapViewComponent, type JimuLayerView } from 'jimu-arcgis'
 import { type Taxon, type Specie, type SpecieFeedback } from './types'
 import SpeciesOverview from './species-overview'
@@ -13,7 +13,6 @@ const nslogo = require('../assets/ns_canada.png')
 
 const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const [jimuMapView, setJimuMapView] = React.useState<JimuMapView>(null)
-  const [mapLayers, setMapLayers] = React.useState<JimuLayerView[]>([])
   const [allTables, setAllTables] = React.useState<__esri.Collection<__esri.Layer>>(null)
   const [taxa, setTaxa] = React.useState<Taxon[]>([])
   const [activeSpecie, setActiveSpecie] = React.useState<Specie>(null)
@@ -23,13 +22,36 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
 
   useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded) {
-      for (const layerViewId in jimuMapView.jimuLayerViews) {
-        const layerView = jimuMapView.jimuLayerViews[layerViewId]
-        // if (layerView.type === 'feature') {
-        //   console.log(layerView?.layer?.title, layerView?.layer?.url)
-        // }
-        setMapLayers(mapLayers => [...mapLayers, layerView])
-      }
+      const mapDs = DataSourceManager.getInstance().getDataSource(jimuMapView.dataSourceId)
+      mapDs.childDataSourcesReady().then(() => {
+        const alChildDS = mapDs.getAllChildDataSources() as QueriableDataSource[]
+        alChildDS.forEach((childDS) => {
+          if (['Usage Type Markup', 'Presence Markup', 'Usage Type', 'Species Range Ecoshapes (generalized)'].includes(childDS.getSchema().label)) {
+            childDS.updateQueryParams(
+              {
+                where: '1<>1',
+                outFields: ['*']
+              } as SqlQueryParams, props.id)
+          }
+        })
+      })
+      // jimuMapView.whenAllJimuLayerViewLoaded().then(() => {
+      //   for (const layerViewId in jimuMapView.jimuLayerViews) {
+      //     const layerView = jimuMapView.jimuLayerViews[layerViewId]
+      //     // console.log(layerView?.layer?.title, layerView?.layer?.url)
+      //     if (layerView.type === 'feature' && ['Usage Type Markup', 'Presence Markup', 'Usage Type', 'Species Range Ecoshapes (generalized)'].includes(layerView?.layer?.title)) {
+      //       console.log(layerView.layerDataSourceId)
+      //       const ds = layerView.getLayerDataSource()
+      //       console.log(ds)
+      //       // ds.updateQueryParams(
+      //       //   {
+      //       //     where: '1<>1',
+      //       //     outFields: ['*']
+      //       //   } as SqlQueryParams, props.id)
+      //     }
+      //     // setMapLayers(mapLayers => [...mapLayers, layerView])
+      //   }
+      // })
 
       const tables = jimuMapView?.view.map.allTables
       setAllTables(tables)
@@ -98,6 +120,48 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
     }
   }, [activeSpecie, allTables])
 
+  useEffect(() => {
+    if (activeSpecie) {
+      const mapDs = DataSourceManager.getInstance().getDataSource(jimuMapView.dataSourceId)
+      mapDs.childDataSourcesReady().then(() => {
+        const alChildDS = mapDs.getAllChildDataSources() as QueriableDataSource[]
+        alChildDS.forEach((childDS) => {
+          if (['Usage Type', 'Species Range Ecoshapes (generalized)'].includes(childDS.getSchema().label)) {
+            childDS.updateQueryParams(
+              {
+                where: `rangemapid=${activeSpecie.rangeMapID}`,
+                outFields: ['*']
+              } as SqlQueryParams, props.id)
+          } else if (['Usage Type Markup', 'Presence Markup'].includes(childDS.getSchema().label)) {
+            console.log(activeSpecie.reviewID)
+            childDS.updateQueryParams(
+              {
+                where: `reviewid=${activeSpecie.reviewID}`,
+                outFields: ['*']
+              } as SqlQueryParams, props.id)
+            console.log(childDS)
+          }
+        })
+      })
+    }
+  }, [activeSpecie, jimuMapView])
+
+  useEffect(() => {
+    return () => {
+      console.log('Unmounting')
+    }
+  }, [])
+
+  // useEffect(() => {
+  //   if (props.useDataSources && props.useDataSources.length > 0) {
+  //     props.useDataSources.forEach((useDataSource) => {
+  //       const ds = DataSourceManager.getInstance().getDataSource(useDataSource.dataSourceId)
+  //       console.log(ds)
+  //     }
+  //     )
+  //   }
+  // }, [props.useDataSources])
+
   if (!props.useMapWidgetIds || props.useMapWidgetIds.length === 0) {
     return <div>Please select a map widget</div>
   }
@@ -108,6 +172,40 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
     }
     setJimuMapView(activeView)
   }
+
+  // function getDefaultLayerFilter(name: string): string {
+  //   if (name === 'ReviewerApp2C - ReviewRangeMapSpecies') {
+  //     return `username='${props.user.username}' and includeinebarreviewer=1`
+  //   }
+  //   return '1<>1'
+  // }
+
+  // const onDataSourceCreated = (ds: DataSource) => {
+  //   const dataSource = ds as QueriableDataSource
+  //   console.log("Hello")
+  //   console.log(getDefaultLayerFilter(dataSource.getSchema().label))
+  //   dataSource.updateQueryParams(
+  //     {
+  //       where: getDefaultLayerFilter(dataSource.getSchema().label),
+  //       outFields: ['*']
+  //     } as SqlQueryParams, props.id
+  //   )
+  //   if (dataSource.getSchema().label === 'ReviewerApp2C - ReviewRangeMapSpecies') {
+  //     dataSource.ready().then(() => {
+  //       console.log(dataSource.getRecords())
+  //     }
+  //     )
+  //     console.log(dataSource.getSchema().label)
+  //     // dataSource.query({}).then((res) => {
+  //     //   console.log(res)
+  //     //   res.records?.forEach((record) => {
+  //     //     console.log(record.getData())
+  //     //   }
+  //     //   )
+  //     // }
+  //     // )
+  //   }
+  // }
 
   return (
     // style={{ backgroundColor: props.theme?.sys.color.secondary.light}}
@@ -154,6 +252,14 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
           </div>
         </div>
       </div>
+
+      {/* {props.useDataSources && props.useDataSources.length > 0 && props.useDataSources.map((useDataSource) => {
+        return <DataSourceComponent
+          useDataSource={useDataSource}
+          widgetId={props.id}
+          onDataSourceCreated={onDataSourceCreated}
+        />
+      })} */}
 
     </div>
   )
