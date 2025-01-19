@@ -93,7 +93,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
         console.log(error)
       })
     }
-  }, [jimuMapView, props.user.username])
+  }, [jimuMapView]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (activeSpecie && allTables) {
@@ -144,7 +144,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
         })
       })
     }
-  }, [activeSpecie, jimuMapView])
+  }, [activeSpecie]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     return () => {
