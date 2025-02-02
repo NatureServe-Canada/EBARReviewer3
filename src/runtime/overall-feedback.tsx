@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
 import { Button, TextArea } from 'jimu-ui'
 import { type Specie, type SpecieFeedback } from './types'
 import defaultMessages from './translations/default'
+import { type DataSource, React } from 'jimu-core'
 
 export default function OverallFeedback(props: {
   activeSpecie: Specie
@@ -9,7 +9,7 @@ export default function OverallFeedback(props: {
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
   specieFeedback: SpecieFeedback
   setSpecieFeedback: React.Dispatch<React.SetStateAction<SpecieFeedback>>
-  allTables: __esri.Collection<__esri.Layer>
+  reviewTable: DataSource
 }) {
   function handleBackButtonChange() {
     props.setDisplayOverallFeedback(false)
@@ -17,8 +17,6 @@ export default function OverallFeedback(props: {
   }
   function saveOverallFeedback() {
     // save the overall feedback
-    const reviewTable = props.allTables.find(x => x.title === 'ReviewerApp2C - Review') as __esri.FeatureLayer
-    
   }
 
   function handleOverallCommentChange(e) {
