@@ -1,10 +1,17 @@
-import { React, type AllWidgetProps, type IMDataSourceInfo, DataSourceStatus, JimuMapViewStatus, DataSourceManager, DataSourceComponent, DataSource, QueriableDataSource, IFeatureLayer, SqlQueryParams } from 'jimu-core'
-import { type JimuMapView, JimuMapViewComponent, type JimuLayerView } from 'jimu-arcgis'
-import { type Taxon, type Specie, type SpecieFeedback, DataSourceLabel } from './types'
+import {
+  React,
+  type AllWidgetProps,
+  DataSourceManager,
+  DataSourceComponent,
+  type DataSource,
+  type QueriableDataSource,
+  type SqlQueryParams,
+  type FeatureLayerDataSource
+} from 'jimu-core'
+import { type Taxon, type Specie, type SpecieFeedback, DataSourceLabel, type Ecoshape } from './types'
 import SpeciesOverview from './species-overview'
 import OverallFeedback from './overall-feedback'
-import { useEffect } from 'react'
-import { set } from 'seamless-immutable'
+// import { useEffect } from 'react'
 import EcoshapeMarkup from './ecoshape-markup'
 
 const nslogo = require('../assets/ns_canada.png')
@@ -20,12 +27,13 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const [displayOverallFeedback, setDisplayOverallFeedback] = React.useState<boolean>(false)
   const [specieFeedback, setSpecieFeedback] = React.useState<SpecieFeedback>(null)
 
-  const [selectedIds, setSelectedIds] = React.useState<string[]>([])
+  const [selectedEcoshapes, setSelectedEcoshapes] = React.useState<Ecoshape[]>([])
   const [reviewTable, setReviewTable] = React.useState<DataSource>(null)
   const [ecoshapeDs, setEcoshapeDs] = React.useState<QueriableDataSource>(null)
   const [ecoshapeReviewDs, setEcoshapeReviewDs] = React.useState<QueriableDataSource>(null)
   const [presenceDs, setPresenceDs] = React.useState<QueriableDataSource>(null)
   const [usageTypeDs, setUsageTypeDs] = React.useState<QueriableDataSource>(null)
+  const [presenceMarkupDs, setPresenceMarkupDs] = React.useState<FeatureLayerDataSource>(null)
 
   // useEffect(() => {
   //   if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded) {
@@ -103,8 +111,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   //   }
   // }, [jimuMapView]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  console.log('SpecieFeedback', specieFeedback)
-  useEffect(() => {
+  React.useEffect(() => {
     if (activeSpecie) {
       props.useDataSources.forEach((useDataSource) => {
         const dataSource = DataSourceManager.getInstance().getDataSource(useDataSource.dataSourceId) as QueriableDataSource
@@ -146,13 +153,12 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
     }
   }, [activeSpecie]) // eslint-disable-line react-hooks/exhaustive-deps
 
-
-  useEffect(() => {
-    if (selectedIds && selectedIds.length > 0) {
+  React.useEffect(() => {
+    if (selectedEcoshapes && selectedEcoshapes.length > 0) {
       setDisplaySpeciesOverview(false)
       setDisplayOverallFeedback(false)
     }
-  }, [selectedIds])
+  }, [selectedEcoshapes])
 
   // useEffect(() => {
   //   if (props.useDataSources && props.useDataSources.length > 0) {
@@ -197,6 +203,8 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       setEcoshapeDs(dataSource)
     } else if (dataSourceLabel === DataSourceLabel.REVIEW) {
       setReviewTable(dataSource)
+    } else if (dataSourceLabel === DataSourceLabel.PRESENCE_MARKUP) {
+      setPresenceMarkupDs(dataSource as FeatureLayerDataSource)
     } else if (dataSourceLabel === DataSourceLabel.SPECIES) {
       dataSource.query({}).then(({ records }) => {
         if (Array.isArray(records) && records.length !== 0) {
@@ -234,8 +242,26 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
 
   const onSelectionChange = (selection) => {
     if (selection && selection.length > 0) {
-      console.log('selection', selection)
-      setSelectedIds(selection)
+      // Fetch the data for selected species
+      ecoshapeDs.query({
+        where: `objectid in (${selection.join(',')})`,
+        outFields: ['objectid', 'ecoshapeid', 'ecoshapename', 'ecozone', 'parentecoregion', 'terrestrialarea', 'terrestrialproportion']
+      } as SqlQueryParams).then((results) => {
+        const ecoshapes: Ecoshape[] = []
+        results.records.forEach((record) => {
+          const data = record.getData()
+          ecoshapes.push({
+            objectID: data.objectid,
+            ecoshapeID: data.ecoshapeid,
+            ecoshapeName: data.ecoshapename,
+            ecozone: data.ecozone,
+            parentEcoregion: data.parentecoregion,
+            terrestrialArea: data.terrestrialarea,
+            terrestrialProportion: data.terrestrialproportion
+          })
+        })
+        setSelectedEcoshapes(ecoshapes)
+      })
     }
   }
 
@@ -277,14 +303,16 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
             reviewTable={reviewTable}
           />
         )}
-        {selectedIds && selectedIds.length > 0 && (
+        {selectedEcoshapes && selectedEcoshapes.length > 0 && (
           <EcoshapeMarkup
-            selectedIds={selectedIds}
-            setSelectedIds={setSelectedIds}
+            widgetId={props.id}
+            selectedEcoshapes={selectedEcoshapes}
+            setSelectedEcoshapes={setSelectedEcoshapes}
             activeSpecie={activeSpecie}
             ecoshapeDs={ecoshapeDs}
             presenceDs={presenceDs}
             usageTypeDs={usageTypeDs}
+            presenceMarkupDs={presenceMarkupDs}
             ecoshapeReviewDs={ecoshapeReviewDs}
             setDisplayOverallFeedback={setDisplayOverallFeedback}
             setDisplaySpeciesOverview={setDisplaySpeciesOverview}

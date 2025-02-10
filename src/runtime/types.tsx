@@ -38,9 +38,10 @@ export enum DataSourceLabel {
 }
 
 export interface EcoshapeReview {
+  objectID: number
   ecoshapeID: number
   reviewID: number
-  markup: string
+  presenceMarkup: string
   usageTypeMarkup: string
   ecoshapeReviewNotes: string
   reference: string
@@ -62,9 +63,11 @@ export interface UsageType {
 }
 
 export interface Ecoshape {
-  parentEcoregion: string
+  objectID: number
+  ecoshapeID: number
+  ecoshapeName: string
   ecozone: string
+  parentEcoregion: string
   terrestrialArea: number
-  name: string
   terrestrialProportion: number
 }

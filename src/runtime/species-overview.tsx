@@ -27,7 +27,7 @@ export default function SpeciesOverview(props: {
     <div className='container'>
       <div className='row'>
         <div className='col'>
-          <Select placeholder={defaultMessages.selectSpecies} onChange={handleSelectChange}>
+          <Select value={props.activeSpecie?.name} placeholder={defaultMessages.selectSpecies} onChange={handleSelectChange}>
             {props.taxa.map((group, groupIndex) => {
               // Generate header and items
               const groupElements = [

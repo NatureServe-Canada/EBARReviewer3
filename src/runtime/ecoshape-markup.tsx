@@ -1,26 +1,29 @@
-import { DataSourceStatus, type QueriableDataSource, type QueryParams, React } from 'jimu-core'
+import { DataSourceStatus, type FeatureLayerDataSource, type QueriableDataSource, QueryOptions, type QueryParams, React } from 'jimu-core'
 import defaultMessages from './translations/default'
 import { useEffect } from 'react'
 import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType } from './types'
 import { Button, TextArea, Select, Option, Label } from 'jimu-ui'
 
 export default function EcoshapeMarkup(props: {
-  selectedIds: string[]
-  setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>
+  widgetId: string
+  selectedEcoshapes: Ecoshape[]
+  setSelectedEcoshapes: React.Dispatch<React.SetStateAction<Ecoshape[]>>
   activeSpecie: Specie
   ecoshapeDs: QueriableDataSource
   presenceDs: QueriableDataSource
   usageTypeDs: QueriableDataSource
+  presenceMarkupDs: FeatureLayerDataSource
   ecoshapeReviewDs: QueriableDataSource
   setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
 }) {
-  const [ecoshape, setEcoshape] = React.useState<Ecoshape>(null)
   const [selectedEcoshapeReviewRecords, setSelectedEcoshapeReviewRecords] = React.useState<EcoshapeReview[]>([])
   const [selectedPresenceRecords, setSelectedPresenceRecords] = React.useState<Presence[]>([])
   const [selectedUsageTypeRecords, setSelectedUsageTypeRecords] = React.useState<UsageType[]>([])
+
   const [presenceMarkupSelect, setPresenceMarkupSelect] = React.useState<string>('')
   const [removalReasonSelect, setRemovalReasonSelect] = React.useState<string>('')
+  const [ecoshapeReviewComment, setEcoshapeReviewComment] = React.useState<string>('')
 
   const presenceMarkupOptions = {
     P: defaultMessages.present,
@@ -34,7 +37,7 @@ export default function EcoshapeMarkup(props: {
     N: defaultMessages.removalReason2,
     F: defaultMessages.removalReason3,
     T: defaultMessages.removalReason4,
-    O: defaultMessages.removalReason5,
+    O: defaultMessages.removalReason5
   }
 
   const usageTypeMarkupOptions = {
@@ -44,20 +47,21 @@ export default function EcoshapeMarkup(props: {
   }
 
   useEffect(() => {
-    if (props.selectedIds) {
-      if (props.selectedIds.length > 0) {
+    if (props.selectedEcoshapes) {
+      if (props.selectedEcoshapes.length > 0) {
         // Get the selected ecoshape review records
         props.ecoshapeReviewDs.query({
-          where: `ecoshapeid in (${props.selectedIds.join(',')}) and reviewid = ${props.activeSpecie.reviewID}`,
+          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')}) and reviewid = ${props.activeSpecie.reviewID}`,
           outFields: ['ecoshapeid', 'reviewid', 'markup', 'usagetypemarkup', 'ecoshapereviewnotes', 'reference', 'removalreason']
         } as QueryParams).then((result) => {
           if (result.records.length > 0) {
             setSelectedEcoshapeReviewRecords(result.records.map(r => {
               const data = r.getData()
               return {
+                objectID: data.objectid,
                 ecoshapeID: data.ecoshapeid,
                 reviewID: data.reviewid,
-                markup: data.markup,
+                presenceMarkup: data.markup,
                 usageTypeMarkup: data.usagetypemarkup,
                 ecoshapeReviewNotes: data.ecoshapereviewnotes,
                 reference: data.reference,
@@ -71,7 +75,7 @@ export default function EcoshapeMarkup(props: {
 
         // get select presence records
         props.presenceDs.query({
-          where: `ecoshapeid in (${props.selectedIds.join(',')})`,
+          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')})`,
           outFields: ['ecoshapeid', 'rangemapid', 'presence', 'rangemapecoshapenotes']
         } as QueryParams).then((result) => {
           if (result.records.length > 0) {
@@ -92,7 +96,7 @@ export default function EcoshapeMarkup(props: {
 
         // get selected UsageType records
         props.usageTypeDs.query({
-          where: `ecoshapeid in (${props.selectedIds.join(',')})`,
+          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')})`,
           outFields: ['ecoshapeid', 'rangemapid', 'usagetype', 'rangemapusagetypenotes']
         } as QueryParams).then((result) => {
           if (result.records.length > 0) {
@@ -111,29 +115,13 @@ export default function EcoshapeMarkup(props: {
           }
         })
       }
-
-      if (props.selectedIds.length === 1 && props.ecoshapeDs) {
-        props.ecoshapeDs.query({
-          where: `ecoshapeid = ${props.selectedIds[0]}`,
-          outFields: ['*']
-        } as QueryParams).then((result) => {
-          console.log(props.selectedIds)
-          const data = result.records[0].getData()
-          setEcoshape({
-            parentEcoregion: data.parentecoregion,
-            ecozone: data.ecozone,
-            terrestrialArea: Math.round((data.terrestrialarea / 1000000) * 100) / 100,
-            name: data.ecoshapename,
-            terrestrialProportion: Math.round(data.terrestrialproportion * 100 * 10) / 10
-          })
-        })
-      }
     }
-  }, [props.selectedIds]) // eslint-disable-line
+  }, [props.selectedEcoshapes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearSelection = () => {
     props.ecoshapeDs.clearSelection()
-    props.setSelectedIds(null)
+    console.log('clearing selection')
+    props.setSelectedEcoshapes(null)
   }
 
   const handleBackButton = () => {
@@ -142,34 +130,68 @@ export default function EcoshapeMarkup(props: {
     props.setDisplayOverallFeedback(false)
   }
 
+  const handleSaveButton = () => {
+    // Apply edits for insert ecoshape review record
+  }
+
+  const handleDeleteButton = () => {
+    // Apply edits for delete ecoshape review record
+    const deleteFeatures = selectedEcoshapeReviewRecords
+      .filter(r => props.selectedEcoshapes.map(x => x.ecoshapeID).includes(r.ecoshapeID))
+      .map(r => { return { objectId: r.objectID } })
+    const ecoshapeReviewDs = props.ecoshapeReviewDs as FeatureLayerDataSource
+    ecoshapeReviewDs.layer.applyEdits({
+      deleteFeatures: deleteFeatures
+    }).then((results) => {
+      console.log('Ecoshape review record deleted')
+    }).catch((error) => {
+      console.log('Error deleting ecoshape review record')
+      console.log(error)
+    })
+  }
+
+  React.useEffect(() => {
+    if (selectedEcoshapeReviewRecords && selectedEcoshapeReviewRecords.length === 1 &&
+      props.selectedEcoshapes.length === 1
+    ) {
+      setPresenceMarkupSelect(selectedEcoshapeReviewRecords[0].presenceMarkup)
+      setRemovalReasonSelect(selectedEcoshapeReviewRecords[0].removalReason)
+      setEcoshapeReviewComment(selectedEcoshapeReviewRecords[0].ecoshapeReviewNotes)
+    } else {
+      setPresenceMarkupSelect('')
+      setRemovalReasonSelect('')
+      setEcoshapeReviewComment('')
+    }
+  }, [props.selectedEcoshapes, selectedEcoshapeReviewRecords])
+
   return (
     <div className='container'>
-      {props.selectedIds.length === 1 && ecoshape && (
+      {props.selectedEcoshapes.length === 1 && (
         <>
           <div className='row'>
             <div className='col'>
-              <h2>{defaultMessages.ecoshapeName}: {ecoshape.name}</h2>
+              <h2>{defaultMessages.ecoshapeName}: {props.selectedEcoshapes[0].ecoshapeName}</h2>
             </div>
           </div>
           <hr />
           <div className='row'>
             <div className='col'>
-              <b>{defaultMessages.parentEcoregion}:</b> {ecoshape.parentEcoregion}
+              <b>{defaultMessages.parentEcoregion}:</b> {props.selectedEcoshapes[0].parentEcoregion}
             </div>
           </div>
           <div className='row'>
             <div className='col'>
-              <b>{defaultMessages.ecozone}:</b> {ecoshape.ecozone}
+              <b>{defaultMessages.ecozone}:</b> {props.selectedEcoshapes[0].ecozone}
             </div>
           </div>
           <div className='row'>
             <div className='col'>
-              <b>{defaultMessages.terrestrialArea}:</b> {ecoshape.terrestrialArea} km<sup>2</sup>
+              <b>{defaultMessages.terrestrialArea}:</b> {props.selectedEcoshapes[0].terrestrialArea} km<sup>2</sup>
             </div>
           </div>
           <div className='row'>
             <div className='col'>
-              <b>{defaultMessages.terrestrialProportion}:</b> {ecoshape.terrestrialProportion}%
+              <b>{defaultMessages.terrestrialProportion}:</b> {props.selectedEcoshapes[0].terrestrialProportion}%
             </div>
           </div>
           <div className='row'>
@@ -204,7 +226,7 @@ export default function EcoshapeMarkup(props: {
       )
       }
       {
-        props.selectedIds.length > 1 && (
+        props.selectedEcoshapes.length > 1 && (
           <>
             <div className='row'>
               <div className='col'>
@@ -221,47 +243,59 @@ export default function EcoshapeMarkup(props: {
         )
       }
       <div className='row'>
-        <div className='col'>
-          <p>{defaultMessages.presence} {defaultMessages.markup}</p>
-          <Select defaultValue={''} onChange={(e) => { setPresenceMarkupSelect(e.target.value) }}>
-            {
-              presenceMarkupOptions && Object.keys(presenceMarkupOptions).filter(key => {
-                const presence = selectedPresenceRecords && selectedPresenceRecords.length !== 0 ? selectedPresenceRecords[0].presence : null
-                console.log(presence)
-                if (presence) {
-                  return key !== presence
+        <p>{defaultMessages.presence} {defaultMessages.markup}</p>
+        <Select value={presenceMarkupSelect} onChange={(e) => { setPresenceMarkupSelect(e.target.value) }}>
+          {
+            presenceMarkupOptions && Object.keys(presenceMarkupOptions).filter(key => {
+              let optionToExclude = ''
+              if (selectedPresenceRecords && selectedPresenceRecords.length !== 0) {
+                // If all selected presence records have the same presence value, exclude that value from the options
+                if (selectedPresenceRecords &&
+                  selectedPresenceRecords.length === props.selectedEcoshapes.length &&
+                  selectedPresenceRecords.every(r => r.presence === selectedPresenceRecords[0].presence)
+                ) {
+                  optionToExclude = selectedPresenceRecords[0].presence
                 }
-                return key !== 'R'
-              }).map((key) => (
-                <Option value={key}>{presenceMarkupOptions[key]}</Option>
-              ))
-            }
-            <Option value={''}>None Set</Option>
-          </Select>
-          {presenceMarkupSelect === 'R' && (
-            <>
-              <Label>{defaultMessages.removalReason} ({defaultMessages.required}):</Label>
-              <Select defaultValue={''} onChange={(e) => { setRemovalReasonSelect(e.target.value) }}>
-                {
-                  removalReasonOptions && Object.keys(removalReasonOptions).map((key) => (
-                    <Option value={key}>{removalReasonOptions[key]}</Option>
-                  ))
-                }
-                <Option value={''}>None Set</Option>
-              </Select>
-            </>
-          )}
-          <Label>{defaultMessages.comment}:</Label>
-          <TextArea />
+              } else {
+                // If all selected ecoshapes not in existing range, exclude 'R' from the options
+                optionToExclude = 'R'
+              }
+              if (optionToExclude) {
+                return key !== optionToExclude
+              }
+              return true
+            }).map((key) => (
+              <Option value={key}>{presenceMarkupOptions[key]}</Option>
+            ))
+          }
+          <Option value={''}>None Set</Option>
+        </Select>
+        {presenceMarkupSelect === 'R' && (
+          <>
+            <Label>{defaultMessages.removalReason} ({defaultMessages.required}):</Label>
+            <Select defaultValue={removalReasonSelect} onChange={(e) => { setRemovalReasonSelect(e.target.value) }}>
+              {
+                removalReasonOptions && Object.keys(removalReasonOptions).map((key) => (
+                  <Option value={key}>{removalReasonOptions[key]}</Option>
+                ))
+              }
+              <Option value={''}>None Set</Option>
+            </Select>
+          </>
+        )}
+        <Label>{defaultMessages.comment}:</Label>
+        <TextArea value={ecoshapeReviewComment} />
 
-        </div>
       </div>
       <div className='row'>
         <div className='col'>
           <Button onClick={handleBackButton}>Back</Button>
         </div>
         <div className='col'>
-          <Button onClick={handleBackButton}>Save</Button>
+          <Button onClick={handleDeleteButton}>Delete Markup</Button>
+        </div>
+        <div className='col'>
+          <Button onClick={handleSaveButton}>Save</Button>
         </div>
       </div>
     </div >
