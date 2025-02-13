@@ -33,7 +33,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const [ecoshapeReviewDs, setEcoshapeReviewDs] = React.useState<QueriableDataSource>(null)
   const [presenceDs, setPresenceDs] = React.useState<QueriableDataSource>(null)
   const [usageTypeDs, setUsageTypeDs] = React.useState<QueriableDataSource>(null)
-  const [presenceMarkupDs, setPresenceMarkupDs] = React.useState<FeatureLayerDataSource>(null)
+  // const [presenceMarkupDs, setPresenceMarkupDs] = React.useState<FeatureLayerDataSource>(null)
 
   // useEffect(() => {
   //   if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded) {
@@ -312,7 +312,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
             ecoshapeDs={ecoshapeDs}
             presenceDs={presenceDs}
             usageTypeDs={usageTypeDs}
-            presenceMarkupDs={presenceMarkupDs}
+            // presenceMarkupDs={presenceMarkupDs}
             ecoshapeReviewDs={ecoshapeReviewDs}
             setDisplayOverallFeedback={setDisplayOverallFeedback}
             setDisplaySpeciesOverview={setDisplaySpeciesOverview}

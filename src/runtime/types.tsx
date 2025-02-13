@@ -13,7 +13,7 @@ export interface Specie {
   rangeMapNotes: string
   rangeMapScope: string
   nsxUrl: string
-  differentiateUsageType: string
+  differentiateUsageType: number
 }
 
 export interface SpecieFeedback {

@@ -3,6 +3,7 @@ import defaultMessages from './translations/default'
 import { useEffect } from 'react'
 import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType } from './types'
 import { Button, TextArea, Select, Option, Label } from 'jimu-ui'
+import { set } from 'seamless-immutable'
 
 export default function EcoshapeMarkup(props: {
   widgetId: string
@@ -12,7 +13,7 @@ export default function EcoshapeMarkup(props: {
   ecoshapeDs: QueriableDataSource
   presenceDs: QueriableDataSource
   usageTypeDs: QueriableDataSource
-  presenceMarkupDs: FeatureLayerDataSource
+  // presenceMarkupDs: FeatureLayerDataSource
   ecoshapeReviewDs: QueriableDataSource
   setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
@@ -24,6 +25,7 @@ export default function EcoshapeMarkup(props: {
   const [presenceMarkupSelect, setPresenceMarkupSelect] = React.useState<string>('')
   const [removalReasonSelect, setRemovalReasonSelect] = React.useState<string>('')
   const [ecoshapeReviewComment, setEcoshapeReviewComment] = React.useState<string>('')
+  const [usageTypeMarkupSelect, setUsageTypeMarkupSelect] = React.useState<string>('')
 
   const presenceMarkupOptions = {
     P: defaultMessages.present,
@@ -120,7 +122,6 @@ export default function EcoshapeMarkup(props: {
 
   const clearSelection = () => {
     props.ecoshapeDs.clearSelection()
-    console.log('clearing selection')
     props.setSelectedEcoshapes(null)
   }
 
@@ -135,32 +136,39 @@ export default function EcoshapeMarkup(props: {
   }
 
   const handleDeleteButton = () => {
-    // Apply edits for delete ecoshape review record
     const deleteFeatures = selectedEcoshapeReviewRecords
       .filter(r => props.selectedEcoshapes.map(x => x.ecoshapeID).includes(r.ecoshapeID))
       .map(r => { return { objectId: r.objectID } })
     const ecoshapeReviewDs = props.ecoshapeReviewDs as FeatureLayerDataSource
     ecoshapeReviewDs.layer.applyEdits({
       deleteFeatures: deleteFeatures
-    }).then((results) => {
-      console.log('Ecoshape review record deleted')
-    }).catch((error) => {
-      console.log('Error deleting ecoshape review record')
-      console.log(error)
+    }).then(() => {
+      clearSelection()
     })
   }
+  console.log(presenceMarkupSelect)
 
   React.useEffect(() => {
     if (selectedEcoshapeReviewRecords && selectedEcoshapeReviewRecords.length === 1 &&
       props.selectedEcoshapes.length === 1
     ) {
-      setPresenceMarkupSelect(selectedEcoshapeReviewRecords[0].presenceMarkup)
-      setRemovalReasonSelect(selectedEcoshapeReviewRecords[0].removalReason)
-      setEcoshapeReviewComment(selectedEcoshapeReviewRecords[0].ecoshapeReviewNotes)
+      if (selectedEcoshapeReviewRecords[0].presenceMarkup) {
+        setPresenceMarkupSelect(selectedEcoshapeReviewRecords[0].presenceMarkup)
+      }
+      if (selectedEcoshapeReviewRecords[0].removalReason) {
+        setRemovalReasonSelect(selectedEcoshapeReviewRecords[0].removalReason)
+      }
+      if (selectedEcoshapeReviewRecords[0].ecoshapeReviewNotes) {
+        setEcoshapeReviewComment(selectedEcoshapeReviewRecords[0].ecoshapeReviewNotes)
+      }
+      if (selectedEcoshapeReviewRecords[0].usageTypeMarkup) {
+        setUsageTypeMarkupSelect(selectedEcoshapeReviewRecords[0].usageTypeMarkup)
+      }
     } else {
       setPresenceMarkupSelect('')
       setRemovalReasonSelect('')
       setEcoshapeReviewComment('')
+      setUsageTypeMarkupSelect('')
     }
   }, [props.selectedEcoshapes, selectedEcoshapeReviewRecords])
 
@@ -278,6 +286,39 @@ export default function EcoshapeMarkup(props: {
                 removalReasonOptions && Object.keys(removalReasonOptions).map((key) => (
                   <Option value={key}>{removalReasonOptions[key]}</Option>
                 ))
+              }
+              <Option value={''}>None Set</Option>
+            </Select>
+          </>
+        )}
+        {props.activeSpecie.differentiateUsageType === 1 && (
+          <>
+            <p>{defaultMessages.usageType} {defaultMessages.markup}</p>
+            <Select value={usageTypeMarkupSelect} onChange={(e) => { setUsageTypeMarkupSelect(e.target.value) }}>
+              {
+                usageTypeMarkupOptions && Object.keys(usageTypeMarkupOptions)
+                  .filter(key => {
+                    let optionToExclude = ''
+                    if (selectedUsageTypeRecords && selectedUsageTypeRecords.length !== 0) {
+                      // If all selected usage type records have the same usage type value, exclude that value from the options
+                      if (selectedUsageTypeRecords &&
+                        selectedUsageTypeRecords.length === props.selectedEcoshapes.length &&
+                        selectedUsageTypeRecords.every(r => r.usageType === selectedUsageTypeRecords[0].usageType)
+                      ) {
+                        optionToExclude = selectedUsageTypeRecords[0].usageType
+                      }
+                    } else {
+                      // If all selected ecoshapes not in existing range, exclude 'N' from the options
+                      optionToExclude = 'N'
+                    }
+                    if (optionToExclude) {
+                      return key !== optionToExclude
+                    }
+                    return true
+                  })
+                  .map((key) => (
+                    <Option value={key}>{usageTypeMarkupOptions[key]}</Option>
+                  ))
               }
               <Option value={''}>None Set</Option>
             </Select>
