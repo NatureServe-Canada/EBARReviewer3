@@ -203,8 +203,8 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       setEcoshapeDs(dataSource)
     } else if (dataSourceLabel === DataSourceLabel.REVIEW) {
       setReviewTable(dataSource)
-    } else if (dataSourceLabel === DataSourceLabel.PRESENCE_MARKUP) {
-      setPresenceMarkupDs(dataSource as FeatureLayerDataSource)
+    // } else if (dataSourceLabel === DataSourceLabel.PRESENCE_MARKUP) {
+    //   setPresenceMarkupDs(dataSource as FeatureLayerDataSource)
     } else if (dataSourceLabel === DataSourceLabel.SPECIES) {
       dataSource.query({}).then(({ records }) => {
         if (Array.isArray(records) && records.length !== 0) {
