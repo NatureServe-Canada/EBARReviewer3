@@ -1,20 +1,23 @@
-import { DataSourceStatus, type FeatureLayerDataSource, type QueriableDataSource, QueryOptions, type QueryParams, React } from 'jimu-core'
+import { DataSource, DataSourceStatus, type FeatureLayerDataSource, type QueriableDataSource, QueryOptions, type QueryParams, React } from 'jimu-core'
 import defaultMessages from './translations/default'
 import { useEffect } from 'react'
-import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType } from './types'
+import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType, DataSourceLabel } from './types'
 import { Button, TextArea, Select, Option, Label } from 'jimu-ui'
-import { set } from 'seamless-immutable'
+import Graphic from 'esri/Graphic'
 
 export default function EcoshapeMarkup(props: {
-  widgetId: string
+  username: string
   selectedEcoshapes: Ecoshape[]
   setSelectedEcoshapes: React.Dispatch<React.SetStateAction<Ecoshape[]>>
   activeSpecie: Specie
-  ecoshapeDs: QueriableDataSource
-  presenceDs: QueriableDataSource
-  usageTypeDs: QueriableDataSource
+  ecoshapeLayer: __esri.FeatureLayer
+  presencelayer: __esri.FeatureLayer
+  usageTypeLayer: __esri.FeatureLayer
+  presenceMarkupLayer: __esri.FeatureLayer
+  usageTypeMarkupLayer: __esri.FeatureLayer
   // presenceMarkupDs: FeatureLayerDataSource
-  ecoshapeReviewDs: QueriableDataSource
+  ecoshapeReviewTable: __esri.FeatureLayer
+  ecoshapeDs: DataSource
   setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
 }) {
@@ -25,6 +28,7 @@ export default function EcoshapeMarkup(props: {
   const [presenceMarkupSelect, setPresenceMarkupSelect] = React.useState<string>('')
   const [removalReasonSelect, setRemovalReasonSelect] = React.useState<string>('')
   const [ecoshapeReviewComment, setEcoshapeReviewComment] = React.useState<string>('')
+  const [reference, setReference] = React.useState<string>('')
   const [usageTypeMarkupSelect, setUsageTypeMarkupSelect] = React.useState<string>('')
 
   const presenceMarkupOptions = {
@@ -52,13 +56,14 @@ export default function EcoshapeMarkup(props: {
     if (props.selectedEcoshapes) {
       if (props.selectedEcoshapes.length > 0) {
         // Get the selected ecoshape review records
-        props.ecoshapeReviewDs.query({
+        props.ecoshapeReviewTable.queryFeatures({
           where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')}) and reviewid = ${props.activeSpecie.reviewID}`,
-          outFields: ['ecoshapeid', 'reviewid', 'markup', 'usagetypemarkup', 'ecoshapereviewnotes', 'reference', 'removalreason']
-        } as QueryParams).then((result) => {
-          if (result.records.length > 0) {
-            setSelectedEcoshapeReviewRecords(result.records.map(r => {
-              const data = r.getData()
+          outFields: ['objectid', 'ecoshapeid', 'reviewid', 'markup', 'usagetypemarkup', 'ecoshapereviewnotes', 'reference', 'removalreason']
+        }).then((result) => {
+          if (result.features.length > 0) {
+            setSelectedEcoshapeReviewRecords(result.features.map(r => {
+              const data = r.attributes
+              console.log(data)
               return {
                 objectID: data.objectid,
                 ecoshapeID: data.ecoshapeid,
@@ -69,20 +74,21 @@ export default function EcoshapeMarkup(props: {
                 reference: data.reference,
                 removalReason: data.removalreason
               }
-            }))
+            })
+            )
           } else {
             setSelectedEcoshapeReviewRecords([])
           }
         })
 
         // get select presence records
-        props.presenceDs.query({
+        props.presencelayer.queryFeatures({
           where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')})`,
           outFields: ['ecoshapeid', 'rangemapid', 'presence', 'rangemapecoshapenotes']
-        } as QueryParams).then((result) => {
-          if (result.records.length > 0) {
-            setSelectedPresenceRecords(result.records.map(r => {
-              const data = r.getData()
+        }).then((result) => {
+          if (result.features.length > 0) {
+            setSelectedPresenceRecords(result.features.map(r => {
+              const data = r.attributes
               return {
                 ecoshapeID: data.ecoshapeid,
                 rangeMapID: data.rangemapid,
@@ -97,13 +103,13 @@ export default function EcoshapeMarkup(props: {
         })
 
         // get selected UsageType records
-        props.usageTypeDs.query({
+        props.usageTypeLayer.queryFeatures({
           where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')})`,
           outFields: ['ecoshapeid', 'rangemapid', 'usagetype', 'rangemapusagetypenotes']
-        } as QueryParams).then((result) => {
-          if (result.records.length > 0) {
-            setSelectedUsageTypeRecords(result.records.map(r => {
-              const data = r.getData()
+        }).then((result) => {
+          if (result.features.length > 0) {
+            setSelectedUsageTypeRecords(result.features.map(r => {
+              const data = r.attributes
               return {
                 ecoShapeID: data.ecoshapeid,
                 rangeMapID: data.rangemapid,
@@ -122,7 +128,6 @@ export default function EcoshapeMarkup(props: {
 
   const clearSelection = () => {
     props.ecoshapeDs.clearSelection()
-    props.setSelectedEcoshapes(null)
   }
 
   const handleBackButton = () => {
@@ -133,20 +138,135 @@ export default function EcoshapeMarkup(props: {
 
   const handleSaveButton = () => {
     // Apply edits for insert ecoshape review record
+    if (!ecoshapeReviewComment) {
+      alert('Please provide markup comments')
+      return
+    }
+
+    if (presenceMarkupSelect === 'R' && !removalReasonSelect) {
+      alert('Please provide removal reason')
+      return
+    }
+    const attributes = {
+      reviewid: props.activeSpecie.reviewID,
+      ecoshapereviewnotes: ecoshapeReviewComment,
+      username: props.username,
+      removalreason: null,
+      reference: reference === '' ? null : reference,
+      markup: presenceMarkupSelect !== '' ? presenceMarkupSelect : null,
+      usagetypemarkup: usageTypeMarkupSelect !== '' ? usageTypeMarkupSelect : null
+    }
+
+    const ecoshapeIDs = props.selectedEcoshapes.map(x => x.ecoshapeID)
+    const reviewedEcoshapeIDs = selectedEcoshapeReviewRecords.map(x => x.ecoshapeID)
+    const rangeMapEcoshapeIDs = selectedPresenceRecords.map(x => x.ecoshapeID)
+    const usageTypeEcoshapeIDs = selectedUsageTypeRecords.map(x => x.ecoShapeID)
+
+    const applyEditsPromises = []
+    if (selectedEcoshapeReviewRecords.length !== 0) {
+      const graphicObjs = []
+      for (let i = 0; i < selectedEcoshapeReviewRecords.length; i++) {
+        const temp = JSON.parse(JSON.stringify(attributes))
+
+        // If the ecoshape is not in the range map and the presence markup is 'R' then skip
+        // The user should use the delete button to remove such markup
+        if (temp.markup === 'R' && !rangeMapEcoshapeIDs.includes(selectedEcoshapeReviewRecords[i].ecoshapeID)) {
+          continue
+        }
+
+        // If the presence markup is the same as the presence value in the presence layer, skip
+        const currentPresenceRecord = selectedPresenceRecords.find(r => r.ecoshapeID === selectedEcoshapeReviewRecords[i].ecoshapeID)
+        if (currentPresenceRecord && currentPresenceRecord.presence === temp.markup) {
+          if (temp.usagetypemarkup) temp.markup = null
+          else continue
+        }
+
+        // If the usage type markup is 'N' and the ecoshape is not in the range map, then skip
+        // The user should use the delete button to remove such markup
+        if ((temp.usagetypemarkup === 'N') && !usageTypeEcoshapeIDs.includes(selectedEcoshapeReviewRecords[i].ecoshapeID)) {
+          if (!temp.markup) continue
+          else temp.usagetypemarkup = null
+        }
+
+        // If the usage type markup is the same as the usage type value in the usage type layer, skip
+        const currentUsageTypeRecord = selectedUsageTypeRecords.find(r => r.ecoShapeID === selectedEcoshapeReviewRecords[i].ecoshapeID)
+        if (currentUsageTypeRecord && currentUsageTypeRecord.usageType === temp.usagetypemarkup) {
+          if (temp.markup) temp.usagetypemarkup = null
+          else continue
+        }
+
+        // Is the ecoshape is not in range, usage type markup is only allowed when there is a presence markup(and value is not 'R')
+        // The case where the presence markup is 'R' and the usage type markup is not 'N' is handled above
+        if (!temp.markup && !temp.usagetypemarkup && !rangeMapEcoshapeIDs.includes(selectedEcoshapeReviewRecords[i].ecoshapeID)) {
+          temp.usagetypemarkup = null
+        }
+
+        if (temp.markup === 'R') {
+          temp.usagetypemarkup = null
+        }
+
+        temp.objectid = selectedEcoshapeReviewRecords[i].objectID
+        graphicObjs.push(new Graphic({ attributes: temp }))
+      }
+      applyEditsPromises.push(props.ecoshapeReviewTable.applyEdits({ updateFeatures: graphicObjs }))
+    }
+
+    const insertecoshapeIDs = ecoshapeIDs.filter(x => !reviewedEcoshapeIDs.includes(x))
+    if (insertecoshapeIDs.length !== 0) {
+      const graphicObjs = []
+      for (let i = 0; i < insertecoshapeIDs.length; i++) {
+        const temp = JSON.parse(JSON.stringify(attributes))
+
+        if ((temp.markup === 'R' || !temp.markup) && !rangeMapEcoshapeIDs.includes(insertecoshapeIDs[i])) continue
+
+        const currentPresenceRecord = selectedPresenceRecords.find(r => r.ecoshapeID === insertecoshapeIDs[i])
+        if (currentPresenceRecord && currentPresenceRecord.presence === temp.markup) {
+          if (temp.usagetypemarkup) temp.markup = null
+          else continue
+        }
+
+        if ((temp.usagetypemarkup === 'N') && !usageTypeEcoshapeIDs.includes(insertecoshapeIDs[i])) {
+          if (!temp.markup) continue
+          else temp.usagetypemarkup = null
+        }
+
+        const currentUsageTypeRecord = selectedUsageTypeRecords.find(r => r.ecoShapeID === insertecoshapeIDs[i])
+        if (currentUsageTypeRecord && currentUsageTypeRecord.usageType === temp.usagetypemarkup) {
+          if (temp.markup) temp.usagetypemarkup = null
+          else continue
+        }
+
+        temp.ecoshapeid = insertecoshapeIDs[i]
+        graphicObjs.push(new Graphic({ attributes: temp }))
+      }
+      applyEditsPromises.push(props.ecoshapeReviewTable.applyEdits({ addFeatures: graphicObjs }))
+    }
+    Promise.all(applyEditsPromises).then(() => {
+      clearSelection()
+      props.presenceMarkupLayer.refresh()
+      props.usageTypeMarkupLayer.refresh()
+    }
+    ).catch((error) => {
+      console.error(error)
+    }
+    )
   }
 
   const handleDeleteButton = () => {
     const deleteFeatures = selectedEcoshapeReviewRecords
       .filter(r => props.selectedEcoshapes.map(x => x.ecoshapeID).includes(r.ecoshapeID))
       .map(r => { return { objectId: r.objectID } })
-    const ecoshapeReviewDs = props.ecoshapeReviewDs as FeatureLayerDataSource
-    ecoshapeReviewDs.layer.applyEdits({
+    props.ecoshapeReviewTable.applyEdits({
       deleteFeatures: deleteFeatures
     }).then(() => {
       clearSelection()
-    })
+      props.presenceMarkupLayer.refresh()
+      props.usageTypeMarkupLayer.refresh()
+    }).catch((error) => {
+      console.error(error)
+    }
+    )
   }
-  console.log(presenceMarkupSelect)
 
   React.useEffect(() => {
     if (selectedEcoshapeReviewRecords && selectedEcoshapeReviewRecords.length === 1 &&
@@ -325,7 +445,9 @@ export default function EcoshapeMarkup(props: {
           </>
         )}
         <Label>{defaultMessages.comment}:</Label>
-        <TextArea value={ecoshapeReviewComment} />
+        <TextArea value={ecoshapeReviewComment} onChange={(e) => { setEcoshapeReviewComment(e.target.value) }} />
+        <Label>{defaultMessages.reference}:</Label>
+        <TextArea value={reference} onChange={(e) => { setReference(e.target.value) }} />
 
       </div>
       <div className='row'>
