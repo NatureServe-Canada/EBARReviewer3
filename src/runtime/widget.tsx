@@ -45,19 +45,22 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   React.useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded && props.user.username) {
       jimuMapView.whenAllJimuLayerViewLoaded().then((views) => {
+        console.log(views)
         Object.entries(views).forEach(([_, view]) => {
-          const layerView = view.view as __esri.LayerView
-          const layer = layerView.layer as __esri.FeatureLayer
-          if (layer.title === DataSourceLabel.PRESENCE) {
-            setPresenceLayer(layer)
-          } else if (layer.title === DataSourceLabel.USAGE_TYPE) {
-            setUsageTypeLayer(layer)
-          } else if (layer.title === DataSourceLabel.PRESENCE_MARKUP) {
-            setPresenceMarkupLayer(layer)
-          } else if (layer.title === DataSourceLabel.USAGE_TYPE_MARKUP) {
-            setUsageTypeMarkupLayer(layer)
-          } else if (layer.title === DataSourceLabel.ECOSHAPE) {
-            setEcoshapeLayer(layer)
+          if (view.type === 'feature') {
+            // const layerView = view.view as __esri.LayerView
+            const layer = view.layer as __esri.FeatureLayer
+            if (layer.title === DataSourceLabel.PRESENCE) {
+              setPresenceLayer(layer)
+            } else if (layer.title === DataSourceLabel.USAGE_TYPE) {
+              setUsageTypeLayer(layer)
+            } else if (layer.title === DataSourceLabel.PRESENCE_MARKUP) {
+              setPresenceMarkupLayer(layer)
+            } else if (layer.title === DataSourceLabel.USAGE_TYPE_MARKUP) {
+              setUsageTypeMarkupLayer(layer)
+            } else if (layer.title === DataSourceLabel.ECOSHAPE) {
+              setEcoshapeLayer(layer)
+            }
           }
         })
       })
@@ -109,7 +112,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       }
     }
   }, [jimuMapView, props.user.username])
-
+  console.log(activeSpecie)
   React.useEffect(() => {
     if (activeSpecie) {
       const extentPromises = []
@@ -165,6 +168,8 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
     if (selectedEcoshapes && selectedEcoshapes.length > 0) {
       setDisplaySpeciesOverview(false)
       setDisplayOverallFeedback(false)
+    } else {
+      setDisplaySpeciesOverview(true)
     }
   }, [selectedEcoshapes])
 

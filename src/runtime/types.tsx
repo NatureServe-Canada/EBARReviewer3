@@ -59,7 +59,7 @@ export interface UsageType {
   ecoShapeID: number
   rangeMapID: number
   usageType: string
-  rangeMapUsageTypeNotes: string
+  // rangeMapUsageTypeNotes: string
 }
 
 export interface Ecoshape {

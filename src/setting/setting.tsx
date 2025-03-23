@@ -3,12 +3,11 @@ import { MapWidgetSelector } from 'jimu-ui/advanced/setting-components'
 import { DataSourceSelector } from 'jimu-ui/advanced/data-source-selector'
 import { React, Immutable, type UseDataSource, AllDataSourceTypes } from 'jimu-core'
 
-
 export default function Setting(props: AllWidgetSettingProps<{ [key: string]: never }>) {
   const onSelect = (useMapWidgetIds: string[]) => {
     props.onSettingChange({
       id: props.id,
-      useMapWidgetIds
+      useMapWidgetIds: useMapWidgetIds
     })
   }
 
@@ -28,16 +27,15 @@ export default function Setting(props: AllWidgetSettingProps<{ [key: string]: ne
 
   return (
     <div className="m-2">
-      {/* <MapWidgetSelector onSelect={onSelect} useMapWidgetIds={props.useMapWidgetIds}></MapWidgetSelector> */}
-    <DataSourceSelector
-      types={Immutable([AllDataSourceTypes.FeatureLayer])}
-      useDataSources={props.useDataSources}
-      useDataSourcesEnabled={props.useDataSourcesEnabled}
-      onToggleUseDataEnabled={onToggleUseDataEnabled}
-      onChange={onDataSourceChange}
-      widgetId={props.id}
-      isMultiple={true}
-    />
+      <MapWidgetSelector onSelect={onSelect} useMapWidgetIds={props.useMapWidgetIds}></MapWidgetSelector>
+      <DataSourceSelector
+        types={Immutable([AllDataSourceTypes.FeatureLayer])}
+        useDataSources={props.useDataSources}
+        useDataSourcesEnabled={props.useDataSourcesEnabled}
+        onToggleUseDataEnabled={onToggleUseDataEnabled}
+        onChange={onDataSourceChange}
+        widgetId={props.id}
+      />
     </div>
   )
 }
