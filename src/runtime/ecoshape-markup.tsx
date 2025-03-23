@@ -295,6 +295,13 @@ export default function EcoshapeMarkup(props: {
     }
   }, [props.selectedEcoshapes, selectedEcoshapeReviewRecords])
 
+  const handlePresenceMarkupChange = (e) => {
+    if (e.target.value !== 'R') {
+      setRemovalReasonSelect('')
+    }
+    setPresenceMarkupSelect(e.target.value)
+  }
+
   return (
     <div className='container p-0'>
       {props.selectedEcoshapes.length === 1 && (
@@ -375,7 +382,7 @@ export default function EcoshapeMarkup(props: {
       }
       <div className='row pt-2 p-0 w-100 m-0'>
         <Label className='pt-2 m-0'>{defaultMessages.presence} {defaultMessages.markup}</Label>
-        <Select value={presenceMarkupSelect} onChange={(e) => { setPresenceMarkupSelect(e.target.value) }}>
+        <Select value={presenceMarkupSelect} onChange={handlePresenceMarkupChange}>
           {
             presenceMarkupOptions && Object.keys(presenceMarkupOptions).filter(key => {
               let optionToExclude = ''
