@@ -44,26 +44,48 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
 
   React.useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded && props.user.username) {
-      jimuMapView.whenAllJimuLayerViewLoaded().then((views) => {
-        console.log(views)
-        Object.entries(views).forEach(([_, view]) => {
-          if (view.type === 'feature') {
-            // const layerView = view.view as __esri.LayerView
-            const layer = view.layer as __esri.FeatureLayer
-            if (layer.title === DataSourceLabel.PRESENCE) {
-              setPresenceLayer(layer)
-            } else if (layer.title === DataSourceLabel.USAGE_TYPE) {
-              setUsageTypeLayer(layer)
-            } else if (layer.title === DataSourceLabel.PRESENCE_MARKUP) {
-              setPresenceMarkupLayer(layer)
-            } else if (layer.title === DataSourceLabel.USAGE_TYPE_MARKUP) {
-              setUsageTypeMarkupLayer(layer)
-            } else if (layer.title === DataSourceLabel.ECOSHAPE) {
-              setEcoshapeLayer(layer)
-            }
+      for (const [_, view] of Object.entries(jimuMapView.jimuLayerViews)) {
+        if (view?.type === 'feature') {
+          const layer = view.layer as __esri.FeatureLayer
+          if (layer.title === DataSourceLabel.PRESENCE) {
+            setPresenceLayer(layer)
+          } else if (layer.title === DataSourceLabel.USAGE_TYPE) {
+            setUsageTypeLayer(layer)
+          } else if (layer.title === DataSourceLabel.PRESENCE_MARKUP) {
+            setPresenceMarkupLayer(layer)
+          } else if (layer.title === DataSourceLabel.USAGE_TYPE_MARKUP) {
+            setUsageTypeMarkupLayer(layer)
+          } else if (layer.title === DataSourceLabel.ECOSHAPE) {
+            setEcoshapeLayer(layer)
           }
-        })
-      })
+        }
+      }
+      // jimuMapView.jimuLayerViews.forEach((view) => {
+      //   if (view.layer.title === DataSourceLabel.ECOSHAPE) {
+      //     setEcoshapeLayer(view.layer as __esri.FeatureLayer)
+      //   }
+      // }
+      // )
+      // jimuMapView.whenAllJimuLayerViewLoaded().then((views) => {
+      //   console.log(views)
+      //   Object.entries(views).forEach(([_, view]) => {
+      //     if (view.type === 'feature') {
+      //       // const layerView = view.view as __esri.LayerView
+      //       const layer = view.layer as __esri.FeatureLayer
+      //       if (layer.title === DataSourceLabel.PRESENCE) {
+      //         setPresenceLayer(layer)
+      //       } else if (layer.title === DataSourceLabel.USAGE_TYPE) {
+      //         setUsageTypeLayer(layer)
+      //       } else if (layer.title === DataSourceLabel.PRESENCE_MARKUP) {
+      //         setPresenceMarkupLayer(layer)
+      //       } else if (layer.title === DataSourceLabel.USAGE_TYPE_MARKUP) {
+      //         setUsageTypeMarkupLayer(layer)
+      //       } else if (layer.title === DataSourceLabel.ECOSHAPE) {
+      //         setEcoshapeLayer(layer)
+      //       }
+      //     }
+      //   })
+      // })
       const tables = jimuMapView?.view.map.allTables
       for (const table of tables) {
         if (table.title === DataSourceLabel.REVIEW) {
@@ -112,7 +134,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       }
     }
   }, [jimuMapView, props.user.username])
-  console.log(activeSpecie)
+
   React.useEffect(() => {
     if (activeSpecie) {
       const extentPromises = []
@@ -212,7 +234,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   }
 
   return (
-    <div className="jimu-widget">
+    <div className="jimu-widget" style={{ overflow: 'auto' }}>
       <JimuMapViewComponent
         onActiveViewChange={onActiveViewChange}
         useMapWidgetId={props.useMapWidgetIds[0]}>
@@ -228,12 +250,12 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       }
       <div className='container'>
         <div className='row justify-content-between my-2'>
-          <div className='col align-self-start'>
+          {/* <div className='col align-self-start'>
             <h1>EBAR Reviewer</h1>
-          </div>
-          <div className='col text-right'>
+          </div> */}
+          {/* <div className='col text-right'>
             <img src={nslogo} alt='NS Logo' style={{ height: '4rem' }} />
-          </div>
+          </div> */}
         </div>
         {displaySpeciesOverview && (
           <SpeciesOverview

@@ -74,15 +74,14 @@ export default function OverallFeedback(props: {
   }
 
   return (
-    <div className='container'>
-      <div className='row'>
-        <div className='col'>
+    <div className='container p-0'>
+      <div className='row border-bottom w-100 m-0'>
+        <div className='col p-0'>
           <h2>{defaultMessages.provideFeedBack}</h2>
         </div>
       </div>
-      <br />
-      <div className='row'>
-        <div className='col'>
+      <div className='row pt-2 p-0 w-100 m-0'>
+        <div className='col p-0'>
           {/* radio button rating*/}
           <h5>Rating</h5>
           <div role='radiogroup' aria-label={'Rating'} >
@@ -117,25 +116,26 @@ export default function OverallFeedback(props: {
           </div>
         </div>
       </div>
-      <div className='row'>
-        <div className='col'>
+      <div className='row pt-2 p-0 w-100 m-0'>
+        <div className='p-0 w-100'>
           <label>
             Overall comment:
-            <TextArea
+          </label>
+          <TextArea
               value={comment}
               onChange={(e) => { setComment(e.target.value) }}
+              style={{ width: '100%' }}
             />
-          </label>
         </div>
       </div>
-      <div className='row row-cols-auto'>
-        <div className='col'>
+      <div className='row row-cols-auto pt-2 p-0 w-100 m-0'>
+        <div className='pr-2'>
           <Button onClick={handleBackButtonChange}>Back</Button>
         </div>
-        <div className='col'>
+        <div className='pr-2'>
           <Button onClick={saveOverallFeedback}>Save</Button>
         </div>
-        <div className='col'>
+        <div className='pr-2'>
           <Button onClick={sumbitFeedback}>Submit</Button>
         </div>
       </div>

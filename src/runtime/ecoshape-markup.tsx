@@ -83,7 +83,7 @@ export default function EcoshapeMarkup(props: {
 
         // get select presence records
         props.presencelayer.queryFeatures({
-          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')})`,
+          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')}) and rangemapid = ${props.activeSpecie.rangeMapID}`,
           outFields: ['ecoshapeid', 'rangemapid', 'presence', 'rangemapecoshapenotes']
         }).then((result) => {
           if (result.features.length > 0) {
@@ -104,7 +104,7 @@ export default function EcoshapeMarkup(props: {
 
         // get selected UsageType records
         props.usageTypeLayer.queryFeatures({
-          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')})`,
+          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')}) and rangemapid = ${props.activeSpecie.rangeMapID}`,
           outFields: ['ecoshapeid', 'rangemapid', 'usagetype']
         }).then((result) => {
           if (result.features.length > 0) {
@@ -293,37 +293,37 @@ export default function EcoshapeMarkup(props: {
   }, [props.selectedEcoshapes, selectedEcoshapeReviewRecords])
 
   return (
-    <div className='container'>
+    <div className='container p-0'>
       {props.selectedEcoshapes.length === 1 && (
         <>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <h2>{defaultMessages.ecoshapeName}: {props.selectedEcoshapes[0].ecoshapeName}</h2>
             </div>
           </div>
           <hr />
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.parentEcoregion}:</b> {props.selectedEcoshapes[0].parentEcoregion}
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.ecozone}:</b> {props.selectedEcoshapes[0].ecozone}
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.terrestrialArea}:</b> {props.selectedEcoshapes[0].terrestrialArea} km<sup>2</sup>
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.terrestrialProportion}:</b> {props.selectedEcoshapes[0].terrestrialProportion}%
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.presence}:</b> {
                 selectedPresenceRecords && selectedPresenceRecords.length !== 0
                   ? selectedPresenceRecords[0].presence
@@ -331,8 +331,8 @@ export default function EcoshapeMarkup(props: {
               }
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.usageType}:</b> {
                 selectedUsageTypeRecords && selectedUsageTypeRecords.length !== 0
                   ? selectedUsageTypeRecords[0].usageType
@@ -340,13 +340,13 @@ export default function EcoshapeMarkup(props: {
               }
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.ecoshapeSpecies}:</b> {props.activeSpecie.name}
             </div>
           </div>
-          <div className='row'>
-            <div className='col'>
+          <div className='row  p-0 w-100 m-0'>
+            <div className='col p-0'>
               <b>{defaultMessages.metadata}:</b> {props.activeSpecie.rangeMetadata}
             </div>
           </div>
@@ -356,22 +356,22 @@ export default function EcoshapeMarkup(props: {
       {
         props.selectedEcoshapes.length > 1 && (
           <>
-            <div className='row'>
-              <div className='col'>
+            <div className='row p-0 w-100 m-0'>
+              <div className='col p-0'>
                 <h2>{defaultMessages.multipleEcoshapes}</h2>
               </div>
             </div>
             <hr />
-            <div className='row'>
-              <div className='col'>
+            <div className='row p-0 w-100 m-0'>
+              <div className='col p-0'>
                 <b>{defaultMessages.warning}:</b> {defaultMessages.warning1}. {defaultMessages.warning2}.
               </div>
             </div>
           </>
         )
       }
-      <div className='row'>
-        <p>{defaultMessages.presence} {defaultMessages.markup}</p>
+      <div className='row pt-2 p-0 w-100 m-0'>
+        <Label className='pt-2 m-0'>{defaultMessages.presence} {defaultMessages.markup}</Label>
         <Select value={presenceMarkupSelect} onChange={(e) => { setPresenceMarkupSelect(e.target.value) }}>
           {
             presenceMarkupOptions && Object.keys(presenceMarkupOptions).filter(key => {
@@ -400,7 +400,7 @@ export default function EcoshapeMarkup(props: {
         </Select>
         {presenceMarkupSelect === 'R' && (
           <>
-            <Label>{defaultMessages.removalReason} ({defaultMessages.required}):</Label>
+            <Label className='pt-2 m-0'>{defaultMessages.removalReason} ({defaultMessages.required}):</Label>
             <Select defaultValue={removalReasonSelect} onChange={(e) => { setRemovalReasonSelect(e.target.value) }}>
               {
                 removalReasonOptions && Object.keys(removalReasonOptions).map((key) => (
@@ -413,7 +413,7 @@ export default function EcoshapeMarkup(props: {
         )}
         {props.activeSpecie.differentiateUsageType === 1 && (
           <>
-            <p>{defaultMessages.usageType} {defaultMessages.markup}</p>
+            <Label className='pt-2 m-0'>{defaultMessages.usageType} {defaultMessages.markup}</Label>
             <Select value={usageTypeMarkupSelect} onChange={(e) => { setUsageTypeMarkupSelect(e.target.value) }}>
               {
                 usageTypeMarkupOptions && Object.keys(usageTypeMarkupOptions)
@@ -444,20 +444,20 @@ export default function EcoshapeMarkup(props: {
             </Select>
           </>
         )}
-        <Label>{defaultMessages.comment}:</Label>
+        <Label className='pt-2 m-0'>{defaultMessages.comment}:</Label>
         <TextArea value={ecoshapeReviewComment} onChange={(e) => { setEcoshapeReviewComment(e.target.value) }} />
-        <Label>{defaultMessages.reference}:</Label>
+        <Label className='pt-2 m-0'>{defaultMessages.reference}:</Label>
         <TextArea value={reference} onChange={(e) => { setReference(e.target.value) }} />
 
       </div>
-      <div className='row'>
-        <div className='col'>
+      <div className='row row-cols-auto pt-2 p-0 w-100 m-0'>
+        <div className='pr-2'>
           <Button onClick={handleBackButton}>Back</Button>
         </div>
-        <div className='col'>
+        <div className='pr-2'>
           <Button onClick={handleDeleteButton}>Delete Markup</Button>
         </div>
-        <div className='col'>
+        <div className='pr-2'>
           <Button onClick={handleSaveButton}>Save</Button>
         </div>
       </div>
