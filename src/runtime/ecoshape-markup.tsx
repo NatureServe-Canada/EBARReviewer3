@@ -63,7 +63,6 @@ export default function EcoshapeMarkup(props: {
           if (result.features.length > 0) {
             setSelectedEcoshapeReviewRecords(result.features.map(r => {
               const data = r.attributes
-              console.log(data)
               return {
                 objectID: data.objectid,
                 ecoshapeID: data.ecoshapeid,
@@ -151,7 +150,7 @@ export default function EcoshapeMarkup(props: {
       reviewid: props.activeSpecie.reviewID,
       ecoshapereviewnotes: ecoshapeReviewComment,
       username: props.username,
-      removalreason: null,
+      removalreason: removalReasonSelect === '' ? null : removalReasonSelect,
       reference: reference === '' ? null : reference,
       markup: presenceMarkupSelect !== '' ? presenceMarkupSelect : null,
       usagetypemarkup: usageTypeMarkupSelect !== '' ? usageTypeMarkupSelect : null
