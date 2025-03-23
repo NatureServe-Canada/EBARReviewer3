@@ -284,11 +284,15 @@ export default function EcoshapeMarkup(props: {
       if (selectedEcoshapeReviewRecords[0].usageTypeMarkup) {
         setUsageTypeMarkupSelect(selectedEcoshapeReviewRecords[0].usageTypeMarkup)
       }
+      if (selectedEcoshapeReviewRecords[0].reference) {
+        setReference(selectedEcoshapeReviewRecords[0].reference)
+      }
     } else {
       setPresenceMarkupSelect('')
       setRemovalReasonSelect('')
       setEcoshapeReviewComment('')
       setUsageTypeMarkupSelect('')
+      setReference('')
     }
   }, [props.selectedEcoshapes, selectedEcoshapeReviewRecords])
 
