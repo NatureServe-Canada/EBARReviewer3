@@ -49,5 +49,6 @@ export default {
   possibleBreeding: "Possible Breeding",
   migration: "Migration",
   nonBreeding: "Non-breeding",
+  rating: "Rating",
   _widgetLabel: "EBAR Reviewer"
 }

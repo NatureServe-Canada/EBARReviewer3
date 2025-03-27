@@ -77,66 +77,66 @@ export default function OverallFeedback(props: {
     <div className='container p-0'>
       <div className='row border-bottom w-100 m-0'>
         <div className='col p-0'>
-          <h2>{defaultMessages.provideFeedBack}</h2>
+          <h4>{defaultMessages.provideFeedBack}</h4>
         </div>
       </div>
       <div className='row pt-2 p-0 w-100 m-0'>
         <div className='col p-0'>
           {/* radio button rating*/}
-          <h5>Rating</h5>
-          <div role='radiogroup' aria-label={'Rating'} >
-            <Label >
-              <Radio name='radio1' className='m-2' checked={rating === 1} onChange={() => { setRating(1) }} />
-              1
-            </Label>
-            <Label >
-              <Radio name='radio1' className='m-2' checked={rating === 2} onChange={(evt, checked) => {
+          <Label className='m-0'>{defaultMessages.rating}:</Label>
+          <div className='d-flex' role='radiogroup' aria-label={'Rating'} >
+            <div className='d-flex align-items-center'>
+              <Radio id="1star" name='radio1' className='mt-0 mb-0 m-2' checked={rating === 1} onChange={() => { setRating(1) }} />
+              <label className='m-0' htmlFor='1star'>1</label>
+            </div>
+            <div className='d-flex align-items-center' >
+              <Radio id="2star" name='radio1' className='mt-0 mb-0 m-2' checked={rating === 2} onChange={(evt, checked) => {
                 setRating(2)
               }} />
-              2
-            </Label>
-            <Label >
-              <Radio name='radio1' className='m-2' checked={rating === 3} onChange={(evt, checked) => {
+              <label className='m-0' htmlFor="2star">2</label>
+            </div>
+            <div className='d-flex align-items-center' >
+              <Radio id="3star" name='radio1' className='mt-0 mb-0 m-2' checked={rating === 3} onChange={(evt, checked) => {
                 setRating(3)
               }} />
-              3
-            </Label>
-            <Label >
-              <Radio name='radio1' className='m-2' checked={rating === 4} onChange={(evt, checked) => {
+              <label className='m-0' htmlFor="3star">3</label>
+            </div>
+            <div className='d-flex align-items-center' >
+              <Radio id="4star" name='radio1' className='mt-0 mb-0 m-2' checked={rating === 4} onChange={(evt, checked) => {
                 setRating(4)
               }} />
-              4
-            </Label>
-            <Label >
-              <Radio name='radio1' className='m-2' checked={rating === 5} onChange={(evt, checked) => {
+              <label className='m-0' htmlFor="4star">4</label>
+            </div>
+            <div className='d-flex align-items-center' >
+              <Radio id="5star" name='radio1' className='mt-0 mb-0 m-2' checked={rating === 5} onChange={(evt, checked) => {
                 setRating(5)
               }} />
-              5
-            </Label>
+              <label className='m-0' htmlFor="5star">5</label>
+            </div>
           </div>
         </div>
       </div>
       <div className='row pt-2 p-0 w-100 m-0'>
         <div className='p-0 w-100'>
           <label>
-            Overall comment:
+            {defaultMessages.overallComment}:
           </label>
           <TextArea
-              value={comment}
-              onChange={(e) => { setComment(e.target.value) }}
-              style={{ width: '100%' }}
-            />
+            value={comment}
+            onChange={(e) => { setComment(e.target.value) }}
+            style={{ width: '100%' }}
+          />
         </div>
       </div>
       <div className='row row-cols-auto pt-2 p-0 w-100 m-0'>
         <div className='pr-2'>
-          <Button onClick={handleBackButtonChange}>Back</Button>
+          <Button onClick={handleBackButtonChange}>{defaultMessages.back}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={saveOverallFeedback}>Save</Button>
+          <Button onClick={saveOverallFeedback}>{defaultMessages.save}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={sumbitFeedback}>Submit</Button>
+          <Button onClick={sumbitFeedback}>{defaultMessages.Submit}</Button>
         </div>
       </div>
     </div>
