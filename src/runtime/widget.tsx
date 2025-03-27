@@ -16,7 +16,7 @@ import OverallFeedback from './overall-feedback'
 // import { useEffect } from 'react'
 import EcoshapeMarkup from './ecoshape-markup'
 import { type JimuQueriableLayerView, type JimuMapView, JimuMapViewComponent } from 'jimu-arcgis'
-import FeatureFilter from 'esri/layers/support/FeatureFilter'
+// import FeatureFilter from 'esri/layers/support/FeatureFilter'
 import { Loading } from 'jimu-ui'
 
 const nslogo = require('../assets/ns_canada.png')
@@ -36,7 +36,6 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const [selectedEcoshapes, setSelectedEcoshapes] = React.useState<Ecoshape[]>([])
   const [ecoshapeDs, setEcoshapeDs] = React.useState<DataSource>(null)
   const [presenceLayer, setPresenceLayer] = React.useState<__esri.FeatureLayer>(null)
-  const [presenceLayerView, setPresenceLayerView] = React.useState<JimuQueriableLayerView>(null)
   const [usageTypeLayer, setUsageTypeLayer] = React.useState<__esri.FeatureLayer>(null)
   const [presenceMarkupLayer, setPresenceMarkupLayer] = React.useState<__esri.FeatureLayer>(null)
   const [usageTypeMarkupLayer, setUsageTypeMarkupLayer] = React.useState<__esri.FeatureLayer>(null)
@@ -44,8 +43,6 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   // const [speciesTable, setSpeciesTable] = React.useState<__esri.FeatureLayer>(null)
   const [ecoshapeReviewTable, setEcoshapeReviewTable] = React.useState<__esri.FeatureLayer>(null)
   const [ecoshapeLayer, setEcoshapeLayer] = React.useState<__esri.FeatureLayer>(null)
-
-  console.log(presenceLayer?.definitionExpression)
 
   React.useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded && props.user.username) {
@@ -148,19 +145,13 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       presenceMarkupLayer.definitionExpression = `reviewid=${activeSpecie.reviewID} and markup is not null`
       extentPromises.push(presenceMarkupLayer.queryExtent())
       Promise.all(extentPromises).then((results) => {
-        const combinedExtent = results.reduce((acc, result) => {
-          if (result.extent) {
-            if (!acc) {
-              return result.extent
-            } else {
-              return acc.union(result.extent)
-            }
-          }
-          return acc
-        }, null)
-        if (combinedExtent) {
-          jimuMapView.view.goTo(combinedExtent)
+        let extent = null
+        if (results[1].count === 0) {
+          extent = results[0].extent
+        } else {
+          extent = results[0].extent.union(results[1].extent)
         }
+        jimuMapView.view.goTo(extent)
       })
       if (activeSpecie.differentiateUsageType === 1) {
         usageTypeLayer.definitionExpression = `rangemapid=${activeSpecie.rangeMapID}`
@@ -252,7 +243,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       />
       {
         !jimuMapView || !taxa
-          ? (<Loading />)
+          ? (<div><Loading /></div>)
           : (
             <div className='container'>
               <div className='row justify-content-between my-2'>
