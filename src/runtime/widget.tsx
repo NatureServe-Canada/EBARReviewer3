@@ -16,6 +16,8 @@ import OverallFeedback from './overall-feedback'
 // import { useEffect } from 'react'
 import EcoshapeMarkup from './ecoshape-markup'
 import { type JimuQueriableLayerView, type JimuMapView, JimuMapViewComponent } from 'jimu-arcgis'
+import FeatureFilter from 'esri/layers/support/FeatureFilter'
+import { Loading } from 'jimu-ui'
 
 const nslogo = require('../assets/ns_canada.png')
 /**
@@ -34,6 +36,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const [selectedEcoshapes, setSelectedEcoshapes] = React.useState<Ecoshape[]>([])
   const [ecoshapeDs, setEcoshapeDs] = React.useState<DataSource>(null)
   const [presenceLayer, setPresenceLayer] = React.useState<__esri.FeatureLayer>(null)
+  const [presenceLayerView, setPresenceLayerView] = React.useState<JimuQueriableLayerView>(null)
   const [usageTypeLayer, setUsageTypeLayer] = React.useState<__esri.FeatureLayer>(null)
   const [presenceMarkupLayer, setPresenceMarkupLayer] = React.useState<__esri.FeatureLayer>(null)
   const [usageTypeMarkupLayer, setUsageTypeMarkupLayer] = React.useState<__esri.FeatureLayer>(null)
@@ -41,6 +44,8 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   // const [speciesTable, setSpeciesTable] = React.useState<__esri.FeatureLayer>(null)
   const [ecoshapeReviewTable, setEcoshapeReviewTable] = React.useState<__esri.FeatureLayer>(null)
   const [ecoshapeLayer, setEcoshapeLayer] = React.useState<__esri.FeatureLayer>(null)
+
+  console.log(presenceLayer?.definitionExpression)
 
   React.useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded && props.user.username) {
@@ -246,53 +251,56 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
         onSelectionChange={onSelectionChange}
       />
       {
-        !jimuMapView && <div>Map is loading...</div>
+        !jimuMapView || !taxa
+          ? (<Loading />)
+          : (
+            <div className='container'>
+              <div className='row justify-content-between my-2'>
+                {/* <div className='col align-self-start'>
+              <h1>EBAR Reviewer</h1>
+            </div> */}
+                {/* <div className='col text-right'>
+              <img src={nslogo} alt='NS Logo' style={{ height: '4rem' }} />
+            </div> */}
+              </div>
+              {displaySpeciesOverview && (
+                <SpeciesOverview
+                  taxa={taxa}
+                  setActiveSpecie={setActiveSpecie}
+                  activeSpecie={activeSpecie}
+                  setDisplayOverallFeedback={setDisplayOverallFeedback}
+                  setDisplaySpeciesOverview={setDisplaySpeciesOverview}
+                />
+              )}
+              {displayOverallFeedback && (
+                <OverallFeedback
+                  activeSpecie={activeSpecie}
+                  setDisplayOverallFeedback={setDisplayOverallFeedback}
+                  setDisplaySpeciesOverview={setDisplaySpeciesOverview}
+                  specieFeedback={specieFeedback}
+                  setSpecieFeedback={setSpecieFeedback}
+                  reviewTable={reviewTable}
+                />
+              )}
+              {selectedEcoshapes && selectedEcoshapes.length > 0 && (
+                <EcoshapeMarkup
+                  username={props.user.username}
+                  selectedEcoshapes={selectedEcoshapes}
+                  setSelectedEcoshapes={setSelectedEcoshapes}
+                  activeSpecie={activeSpecie}
+                  ecoshapeLayer={ecoshapeLayer}
+                  presencelayer={presenceLayer}
+                  usageTypeLayer={usageTypeLayer}
+                  presenceMarkupLayer={presenceMarkupLayer}
+                  usageTypeMarkupLayer={usageTypeMarkupLayer}
+                  ecoshapeReviewTable={ecoshapeReviewTable}
+                  ecoshapeDs={ecoshapeDs}
+                  setDisplayOverallFeedback={setDisplayOverallFeedback}
+                  setDisplaySpeciesOverview={setDisplaySpeciesOverview}
+                />)}
+            </div>
+          )
       }
-      <div className='container'>
-        <div className='row justify-content-between my-2'>
-          {/* <div className='col align-self-start'>
-            <h1>EBAR Reviewer</h1>
-          </div> */}
-          {/* <div className='col text-right'>
-            <img src={nslogo} alt='NS Logo' style={{ height: '4rem' }} />
-          </div> */}
-        </div>
-        {displaySpeciesOverview && (
-          <SpeciesOverview
-            taxa={taxa}
-            setActiveSpecie={setActiveSpecie}
-            activeSpecie={activeSpecie}
-            setDisplayOverallFeedback={setDisplayOverallFeedback}
-            setDisplaySpeciesOverview={setDisplaySpeciesOverview}
-          />
-        )}
-        {displayOverallFeedback && (
-          <OverallFeedback
-            activeSpecie={activeSpecie}
-            setDisplayOverallFeedback={setDisplayOverallFeedback}
-            setDisplaySpeciesOverview={setDisplaySpeciesOverview}
-            specieFeedback={specieFeedback}
-            setSpecieFeedback={setSpecieFeedback}
-            reviewTable={reviewTable}
-          />
-        )}
-        {selectedEcoshapes && selectedEcoshapes.length > 0 && (
-          <EcoshapeMarkup
-            username={props.user.username}
-            selectedEcoshapes={selectedEcoshapes}
-            setSelectedEcoshapes={setSelectedEcoshapes}
-            activeSpecie={activeSpecie}
-            ecoshapeLayer={ecoshapeLayer}
-            presencelayer={presenceLayer}
-            usageTypeLayer={usageTypeLayer}
-            presenceMarkupLayer={presenceMarkupLayer}
-            usageTypeMarkupLayer={usageTypeMarkupLayer}
-            ecoshapeReviewTable={ecoshapeReviewTable}
-            ecoshapeDs={ecoshapeDs}
-            setDisplayOverallFeedback={setDisplayOverallFeedback}
-            setDisplaySpeciesOverview={setDisplaySpeciesOverview}
-          />)}
-      </div>
     </div>
   )
 }
