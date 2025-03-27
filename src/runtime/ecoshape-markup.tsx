@@ -308,7 +308,7 @@ export default function EcoshapeMarkup(props: {
         <>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <h2>{defaultMessages.ecoshapeName}: {props.selectedEcoshapes[0].ecoshapeName}</h2>
+              <h4>{defaultMessages.ecoshapeName}: {props.selectedEcoshapes[0].ecoshapeName}</h4>
             </div>
           </div>
           <hr />
@@ -368,7 +368,7 @@ export default function EcoshapeMarkup(props: {
           <>
             <div className='row p-0 w-100 m-0'>
               <div className='col p-0'>
-                <h2>{defaultMessages.multipleEcoshapes}</h2>
+                <h4>{defaultMessages.multipleEcoshapes}</h4>
               </div>
             </div>
             <hr />
@@ -406,7 +406,7 @@ export default function EcoshapeMarkup(props: {
               <Option value={key}>{presenceMarkupOptions[key]}</Option>
             ))
           }
-          <Option value={''}>None Set</Option>
+          <Option value={''}>{defaultMessages.noneSet}</Option>
         </Select>
         {presenceMarkupSelect === 'R' && (
           <>
@@ -417,7 +417,7 @@ export default function EcoshapeMarkup(props: {
                   <Option value={key}>{removalReasonOptions[key]}</Option>
                 ))
               }
-              <Option value={''}>None Set</Option>
+              <Option value={''}>{defaultMessages.noneSet}</Option>
             </Select>
           </>
         )}
@@ -450,7 +450,7 @@ export default function EcoshapeMarkup(props: {
                     <Option value={key}>{usageTypeMarkupOptions[key]}</Option>
                   ))
               }
-              <Option value={''}>None Set</Option>
+              <Option value={''}>{defaultMessages.noneSet}</Option>
             </Select>
           </>
         )}
@@ -462,13 +462,13 @@ export default function EcoshapeMarkup(props: {
       </div>
       <div className='row row-cols-auto pt-2 p-0 w-100 m-0'>
         <div className='pr-2'>
-          <Button onClick={handleBackButton}>Back</Button>
+          <Button onClick={handleBackButton}>{defaultMessages.back}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleDeleteButton}>Delete Markup</Button>
+          <Button onClick={handleDeleteButton}>{defaultMessages.delete}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleSaveButton}>Save</Button>
+          <Button onClick={handleSaveButton}>{defaultMessages.save}</Button>
         </div>
       </div>
     </div >
