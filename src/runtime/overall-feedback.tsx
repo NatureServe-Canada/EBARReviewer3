@@ -1,7 +1,7 @@
 import { Button, Label, Radio, TextArea } from 'jimu-ui'
 import { type Specie, type SpecieFeedback } from './types'
 import defaultMessages from './translations/default'
-import { type DataSource, React } from 'jimu-core'
+import { React } from 'jimu-core'
 import Graphic from 'esri/Graphic'
 
 export default function OverallFeedback(props: {
@@ -80,6 +80,18 @@ export default function OverallFeedback(props: {
           <h4>{defaultMessages.provideFeedBack}</h4>
         </div>
       </div>
+      {
+        props.specieFeedback.dateCompleted && (
+          <div className='row pt-2 p-0 w-100 m-0'>
+            <div className='p-0 w-100'>
+              <b style={{ color: '#B80F0A' }}>
+                {defaultMessages.review_submitted}
+              </b>: {defaultMessages.reviewSubmitted}
+            </div>
+          </div>
+        )
+      }
+
       <div className='row pt-2 p-0 w-100 m-0'>
         <div className='col p-0'>
           {/* radio button rating*/}
@@ -133,10 +145,10 @@ export default function OverallFeedback(props: {
           <Button onClick={handleBackButtonChange}>{defaultMessages.back}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={saveOverallFeedback}>{defaultMessages.save}</Button>
+          <Button onClick={saveOverallFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.save}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={sumbitFeedback}>{defaultMessages.Submit}</Button>
+          <Button onClick={sumbitFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.Submit}</Button>
         </div>
       </div>
     </div>

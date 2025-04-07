@@ -16,7 +16,6 @@ import OverallFeedback from './overall-feedback'
 // import { useEffect } from 'react'
 import EcoshapeMarkup from './ecoshape-markup'
 import { type JimuQueriableLayerView, type JimuMapView, JimuMapViewComponent } from 'jimu-arcgis'
-// import FeatureFilter from 'esri/layers/support/FeatureFilter'
 import { Loading } from 'jimu-ui'
 
 const nslogo = require('../assets/ns_canada.png')
@@ -140,6 +139,26 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   React.useEffect(() => {
     if (activeSpecie) {
       const extentPromises = []
+      // for (const [_, view] of Object.entries(jimuMapView.jimuLayerViews)) {
+      //   if (view?.type === 'feature') {
+      //     const layer = view.layer as __esri.FeatureLayer
+      //     const layerView = view.view as __esri.FeatureLayerView
+      //     if (layer.title === DataSourceLabel.PRESENCE) {
+      //       layerView.filter = new FeatureFilter({
+      //         where: `rangemapid=${activeSpecie.rangeMapID}`
+      //       })
+      //     }
+      //   }
+      // }
+      // jimuMapView.view.whenLayerView(presenceLayer).then((layerView) => {
+      //   if (layerView) {
+      //     let featureLayerView = layerView;
+      //     featureLayerView.filter = new FeatureFilter({
+      //       where: `rangemapid=${activeSpecie.rangeMapID}`
+      //     })
+      //   }
+      // })
+
       presenceLayer.definitionExpression = `rangemapid=${activeSpecie.rangeMapID}`
       extentPromises.push(presenceLayer.queryExtent())
       presenceMarkupLayer.definitionExpression = `reviewid=${activeSpecie.reviewID} and markup is not null`
@@ -259,6 +278,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
                   taxa={taxa}
                   setActiveSpecie={setActiveSpecie}
                   activeSpecie={activeSpecie}
+                  specieFeedback={specieFeedback}
                   setDisplayOverallFeedback={setDisplayOverallFeedback}
                   setDisplaySpeciesOverview={setDisplaySpeciesOverview}
                 />
@@ -286,6 +306,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
                   usageTypeMarkupLayer={usageTypeMarkupLayer}
                   ecoshapeReviewTable={ecoshapeReviewTable}
                   ecoshapeDs={ecoshapeDs}
+                  specieFeedback={specieFeedback}
                   setDisplayOverallFeedback={setDisplayOverallFeedback}
                   setDisplaySpeciesOverview={setDisplaySpeciesOverview}
                 />)}

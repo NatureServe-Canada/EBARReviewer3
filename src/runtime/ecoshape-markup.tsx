@@ -1,7 +1,7 @@
-import { DataSource, DataSourceStatus, type FeatureLayerDataSource, type QueriableDataSource, QueryOptions, type QueryParams, React } from 'jimu-core'
+import { type DataSource, React } from 'jimu-core'
 import defaultMessages from './translations/default'
 import { useEffect } from 'react'
-import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType, DataSourceLabel } from './types'
+import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType, type SpecieFeedback } from './types'
 import { Button, TextArea, Select, Option, Label } from 'jimu-ui'
 import Graphic from 'esri/Graphic'
 
@@ -18,6 +18,7 @@ export default function EcoshapeMarkup(props: {
   // presenceMarkupDs: FeatureLayerDataSource
   ecoshapeReviewTable: __esri.FeatureLayer
   ecoshapeDs: DataSource
+  specieFeedback: SpecieFeedback
   setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
 }) {
@@ -312,6 +313,18 @@ export default function EcoshapeMarkup(props: {
             </div>
           </div>
           <hr />
+          {
+            props.specieFeedback.dateCompleted && (
+              <div className='row  p-0 w-100 m-0'>
+                <div className='col p-0'>
+                  <b style={{ color: '#B80F0A' }}>
+                    {defaultMessages.review_submitted}
+                  </b>: {defaultMessages.reviewSubmitted}
+                </div>
+              </div>
+            )
+          }
+
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
               <b>{defaultMessages.parentEcoregion}:</b> {props.selectedEcoshapes[0].parentEcoregion}
@@ -372,6 +385,18 @@ export default function EcoshapeMarkup(props: {
               </div>
             </div>
             <hr />
+            {
+              props.specieFeedback.dateCompleted && (
+                <div className='row  p-0 w-100 m-0'>
+                  <div className='col p-0'>
+                    <b style={{ color: '#B80F0A' }}>
+                      {defaultMessages.review_submitted}
+                    </b>: {defaultMessages.reviewSubmitted}
+                  </div>
+                </div>
+              )
+            }
+
             <div className='row p-0 w-100 m-0'>
               <div className='col p-0'>
                 <b>{defaultMessages.warning}:</b> {defaultMessages.warning1}. {defaultMessages.warning2}.
@@ -465,10 +490,10 @@ export default function EcoshapeMarkup(props: {
           <Button onClick={handleBackButton}>{defaultMessages.back}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleDeleteButton}>{defaultMessages.delete}</Button>
+          <Button onClick={handleDeleteButton} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.delete}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleSaveButton}>{defaultMessages.save}</Button>
+          <Button onClick={handleSaveButton} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.save}</Button>
         </div>
       </div>
     </div >

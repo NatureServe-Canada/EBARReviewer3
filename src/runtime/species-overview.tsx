@@ -1,12 +1,13 @@
 import React from 'react'
 import { Select, Option, Button } from 'jimu-ui'
-import { type Taxon, type Specie } from './types'
+import { type Taxon, type Specie, type SpecieFeedback } from './types'
 import defaultMessages from './translations/default'
 
 export default function SpeciesOverview(props: {
   taxa: Taxon[]
   activeSpecie: Specie
   setActiveSpecie: (specie: Specie) => void
+  specieFeedback: SpecieFeedback
   setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
 
@@ -55,6 +56,17 @@ export default function SpeciesOverview(props: {
       </div>
       {props.activeSpecie && (
         <div className='container mt-2 p-0'>
+          {
+            props.specieFeedback?.dateCompleted && (
+              <div className='row'>
+                <div className='col p-0'>
+                  <b style={{ color: '#B80F0A' }}>
+                    {defaultMessages.review_submitted}
+                  </b>: {defaultMessages.reviewSubmitted}
+                </div>
+              </div>
+            )
+          }
           <div className='row'><div className='col p-0'><b>{defaultMessages.rangeVersion}:</b> {props.activeSpecie.rangeVersion}</div></div>
           <div className='row'><div className='col p-0'><b>{defaultMessages.rangeStage}:</b> {props.activeSpecie.rangeStage}</div></div>
           <div className='row'><div className='col p-0'><b>{defaultMessages.rangeScope}:</b> {props.activeSpecie.rangeMapScope}</div></div>
