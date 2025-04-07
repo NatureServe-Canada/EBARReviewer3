@@ -16,7 +16,9 @@ import OverallFeedback from './overall-feedback'
 // import { useEffect } from 'react'
 import EcoshapeMarkup from './ecoshape-markup'
 import { type JimuQueriableLayerView, type JimuMapView, JimuMapViewComponent } from 'jimu-arcgis'
+import FeatureFilter from 'esri/layers/support/FeatureFilter'
 import { Loading } from 'jimu-ui'
+import Graphic from 'esri/Graphic'
 
 const nslogo = require('../assets/ns_canada.png')
 /**
@@ -185,12 +187,26 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       }).then((results) => {
         if (Array.isArray(results.features) && results.features.length === 1) {
           const data = results.features[0].attributes
+          const currentDate = new Date().getTime()
+          if (!data.datestarted) {
+            reviewTable.applyEdits({
+              updateFeatures: [new Graphic({
+                attributes: {
+                  objectid: data.objectid,
+                  datestarted: currentDate
+                }
+              })]
+            }).then(() => {
+              console.log('Date started set')
+            }
+            )
+          }
           setSpecieFeedback({
             reviewID: data.reviewid,
             rangeMapID: data.rangemapid,
             objectID: data.objectid,
             reviewNotes: data.reviewnotes,
-            dateStarted: data.datestarted,
+            dateStarted: data.datestarted ? data.datestarted : currentDate,
             dateCompleted: data.datecompleted,
             overallStarRating: data.overallstarrating
           })
