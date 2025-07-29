@@ -1,6 +1,5 @@
 import { type DataSource, React } from 'jimu-core'
 import defaultMessages from './translations/default'
-import { useEffect } from 'react'
 import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType, type SpecieFeedback } from './types'
 import { Button, TextArea, Select, Option, Label } from 'jimu-ui'
 import Graphic from 'esri/Graphic'
@@ -53,7 +52,7 @@ export default function EcoshapeMarkup(props: {
     N: defaultMessages.nonBreeding
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (props.selectedEcoshapes) {
       if (props.selectedEcoshapes.length > 0) {
         // Get the selected ecoshape review records
@@ -268,6 +267,16 @@ export default function EcoshapeMarkup(props: {
     )
   }
 
+  const isUsageTypeMarkupDisabled = React.useMemo(() => {
+    if (presenceMarkupSelect === 'R') {
+      return true
+    }
+    if ((!selectedPresenceRecords || selectedPresenceRecords.length === 0) && !presenceMarkupSelect) {
+      return true
+    }
+    return false
+  }, [presenceMarkupSelect, selectedPresenceRecords])
+
   React.useEffect(() => {
     if (selectedEcoshapeReviewRecords && selectedEcoshapeReviewRecords.length === 1 &&
       props.selectedEcoshapes.length === 1
@@ -299,6 +308,9 @@ export default function EcoshapeMarkup(props: {
   const handlePresenceMarkupChange = (e) => {
     if (e.target.value !== 'R') {
       setRemovalReasonSelect('')
+    }
+    if (e.target.value === 'R') {
+      setUsageTypeMarkupSelect('')
     }
     setPresenceMarkupSelect(e.target.value)
   }
@@ -449,7 +461,7 @@ export default function EcoshapeMarkup(props: {
         {props.activeSpecie.differentiateUsageType === 1 && (
           <>
             <Label className='pt-2 m-0'>{defaultMessages.usageType} {defaultMessages.markup}</Label>
-            <Select value={usageTypeMarkupSelect} onChange={(e) => { setUsageTypeMarkupSelect(e.target.value) }}>
+            <Select value={usageTypeMarkupSelect} onChange={(e) => { setUsageTypeMarkupSelect(e.target.value) }} disabled={isUsageTypeMarkupDisabled}>
               {
                 usageTypeMarkupOptions && Object.keys(usageTypeMarkupOptions)
                   .filter(key => {
