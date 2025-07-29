@@ -103,7 +103,7 @@ export default function EcoshapeMarkup(props: {
 
         // get selected UsageType records
         props.usageTypeLayer.queryFeatures({
-          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')}) and rangemapid = ${props.activeSpecie.rangeMapID}`,
+          where: `ecoshapeid in (${props.selectedEcoshapes.map(x => x.ecoshapeID).join(',')}) and rangemapid = ${props.activeSpecie.rangeMapID} and usagetype is not null`,
           outFields: ['ecoshapeid', 'rangemapid', 'usagetype']
         }).then((result) => {
           if (result.features.length > 0) {
