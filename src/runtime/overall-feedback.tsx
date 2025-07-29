@@ -54,19 +54,20 @@ export default function OverallFeedback(props: {
     }
     if (!confirm('After submit, additional markup and feedback for this range map will not be allowed. Do you want to continue?')) return
 
+    const currentDate = Date.now()
     props.reviewTable.applyEdits({
       updateFeatures: [new Graphic({
         attributes: {
           objectid: props.specieFeedback.objectID,
           overallstarrating: rating,
           reviewnotes: comment,
-          datecompleted: Date.now()
+          datecompleted: currentDate
         }
       })
       ]
     }).then(() => {
       props.setSpecieFeedback((prev: SpecieFeedback) => {
-        return { ...prev, overallStarRating: rating, reviewNotes: comment }
+        return { ...prev, overallStarRating: rating, reviewNotes: comment, dateCompleted: currentDate }
       })
       props.setDisplayOverallFeedback(false)
       props.setDisplaySpeciesOverview(true)

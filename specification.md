@@ -74,6 +74,17 @@
         - [x] Clear Selection
         - [x] Navigate back to Species Overview Page
 
+- [x] Overall Feedback Page
+  - [x] Fill any existing rating and comments
+  - [x] Back Button naviagates to Species Overview Page
+  - [x] Save to database
+    - [x] Alert if no rating is provided. Comments are optional
+    - [x] Navigate to Species Overview Page
+  - [x] Submit to database
+    - [x] Alert that they cannot edit the review after submission
+    - [x] Alert if no rating is provided. Comments are optional
+    - [x] Navigate to Species Overview Page
+
 - [x] French version of the app
 
 ### Layers
