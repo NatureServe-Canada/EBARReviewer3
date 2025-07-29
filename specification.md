@@ -45,7 +45,7 @@
     - [x] Fill (RangeMap)Ecoshape attributes
         - [x] Fill Parent Ecoregion, Ecozone, Terrestrial Area, Species, and Metadata attributes
         - [x] If Ecoshape in range, fill Presence/usage Type attributes
-    - [ ] Populate Presence Markup dropdown list
+    - [x] Populate Presence Markup dropdown list
       - [x] If ecoshape is not in range - populate dropdown with **Present**, **Presence Expected**, and **Historical** options
       - [x] If ecoshape is in range
         - [x] Include Remove option
@@ -53,18 +53,26 @@
       - [x] If the selected Presence Markup option is **Remove**
         - [x] Display Removal Reason dropdown list. Unlike Presence markup, this is a static list
         - [x] Make Removal Reason dropdown a required input
-    - [ ] If range Differentiates UsageType, Display Usage Type Markup dropdown
-    - [ ] Enable Usage Type Markup dropdown
-        - [ ] If the selected Ecoshape is in Presence range
-        - [ ] If the selected Ecoshape is **outside the range, but has Presence Markup**
-        - [ ] Dropdown options - the dropdown is conditionally populated with Breeding, Possible Breeding, and Non Breeding options
-          - [ ] If the selected ecoshape is in range but does not have Usage Type - populate Breeding, Non-Breeding
-          - [ ] If the selected ecoshape is in range and does have Usage Type
-            - [ ] Add Non Breeding option
-            - [ ] Remove the existing value from the dropdown. For e.g., if the selected ecoshape has Usage Type value Breeding - populate dropdown with Possible Breeding, and Non-Breeding options
-    - [ ] Disable Presence Markup
-      - [ ] If the selected Ecoshape is outside the range
-      - [ ] If the selected Ecoshape **is in range, but has Presence Markup Remove**
+    - [x] If range Differentiates UsageType display Usage Type Markup dropdown, or else hide it
+        - [x] Enable Usage Type Markup dropdown
+            - [x] If the selected Ecoshape is in Presence range
+            - [x] If the selected Ecoshape is **outside the range, but has Presence Markup**
+            - [ ] Dropdown options - the dropdown is conditionally populated with Breeding, Possible Breeding, and Non Breeding options
+              - [x] If the selected ecoshape is in range but does not have Usage Type - populate Breeding, Non-Breeding
+              - [x] If the selected ecoshape is in range and does have Usage Type
+                - [x] Add Non Breeding option
+                - [x] Remove the existing value from the dropdown. For e.g., if the selected ecoshape has Usage Type value Breeding - populate dropdown with Possible Breeding, and Non-Breeding options
+        - [x] Disable Usage Type Markup dropdown
+          - [x] If the selected Ecoshape is outside the range
+          - [x] If the selected Ecoshape **is in range, but has Presence Markup Remove**
+              - [x] If the dropdown already has a value, unset the dropdown before disabling
+    - [x] On Delete Markup
+        - [x] Presence Markup should be deleted
+        - [x] If present, Usage Type Markup should be deleted
+        - [x] If both are present, then both markups should be deleted
+    - [x] On Back Button
+        - [x] Clear Selection
+        - [x] Nagivate back to Species Overview Page
 
 
 ### Layers
