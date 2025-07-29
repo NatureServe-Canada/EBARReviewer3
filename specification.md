@@ -57,7 +57,7 @@
         - [x] Enable Usage Type Markup dropdown
             - [x] If the selected Ecoshape is in Presence range
             - [x] If the selected Ecoshape is **outside the range, but has Presence Markup**
-            - [ ] Dropdown options - the dropdown is conditionally populated with Breeding, Possible Breeding, and Non Breeding options
+            - [x] Dropdown options - the dropdown is conditionally populated with Breeding, Possible Breeding, and Non Breeding options
               - [x] If the selected ecoshape is in range but does not have Usage Type - populate Breeding, Non-Breeding
               - [x] If the selected ecoshape is in range and does have Usage Type
                 - [x] Add Non Breeding option
@@ -72,8 +72,9 @@
         - [x] If both are present, then both markups should be deleted
     - [x] On Back Button
         - [x] Clear Selection
-        - [x] Nagivate back to Species Overview Page
+        - [x] Navigate back to Species Overview Page
 
+- [x] French version of the app
 
 ### Layers
 1. ReviewRangeMapSpecies

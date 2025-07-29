@@ -1,9 +1,9 @@
 import React from 'react'
 import { Select, Option, Button } from 'jimu-ui'
 import { type Taxon, type Specie, type SpecieFeedback } from './types'
-import defaultMessages from './translations/default'
 
 export default function SpeciesOverview(props: {
+  nls: (id: string) => string
   taxa: Taxon[]
   activeSpecie: Specie
   setActiveSpecie: (specie: Specie) => void
@@ -28,7 +28,7 @@ export default function SpeciesOverview(props: {
     <div className='container'>
       <div className='row'>
         <div className='col p-0'>
-          <Select value={props.activeSpecie?.name} placeholder={defaultMessages.selectSpecies} onChange={handleSelectChange}>
+          <Select value={props.activeSpecie?.name} placeholder={props.nls('selectSpecies')} onChange={handleSelectChange}>
             {props.taxa.map((group, groupIndex) => {
               // Generate header and items
               const groupElements = [
@@ -61,21 +61,21 @@ export default function SpeciesOverview(props: {
               <div className='row'>
                 <div className='col p-0'>
                   <b style={{ color: '#B80F0A' }}>
-                    {defaultMessages.review_submitted}
-                  </b>: {defaultMessages.reviewSubmitted}
+                    {props.nls('review_submitted')}
+                  </b>: {props.nls('reviewSubmitted')}
                 </div>
               </div>
             )
           }
-          <div className='row'><div className='col p-0'><b>{defaultMessages.rangeVersion}:</b> {props.activeSpecie.rangeVersion}</div></div>
-          <div className='row'><div className='col p-0'><b>{defaultMessages.rangeStage}:</b> {props.activeSpecie.rangeStage}</div></div>
-          <div className='row'><div className='col p-0'><b>{defaultMessages.rangeScope}:</b> {props.activeSpecie.rangeMapScope}</div></div>
+          <div className='row'><div className='col p-0'><b>{props.nls('rangeVersion')}:</b> {props.activeSpecie.rangeVersion}</div></div>
+          <div className='row'><div className='col p-0'><b>{props.nls('rangeStage')}:</b> {props.activeSpecie.rangeStage}</div></div>
+          <div className='row'><div className='col p-0'><b>{props.nls('rangeScope')}:</b> {props.activeSpecie.rangeMapScope}</div></div>
           <div className='row'>
-            <div className='col p-0'><b>{defaultMessages.speciesInformation}:</b> <a href={props.activeSpecie.nsxUrl} target="_blank" rel="noopener noreferrer">{defaultMessages.gotoNSExplorer}</a></div>
+            <div className='col p-0'><b>{props.nls('speciesInformation')}:</b> <a href={props.activeSpecie.nsxUrl} target="_blank" rel="noopener noreferrer">{props.nls('gotoNSExplorer')}</a></div>
           </div>
-          <div className='row'><div className='col p-0'><b>{defaultMessages.metadata}:</b> {props.activeSpecie.rangeMetadata}</div></div>
+          <div className='row'><div className='col p-0'><b>{props.nls('metadata')}:</b> {props.activeSpecie.rangeMetadata}</div></div>
           <div className='row'>
-            <div className='col p-0'><Button onClick={handleOverallFeedback}>{defaultMessages.overallFeedback}</Button></div>
+            <div className='col p-0'><Button onClick={handleOverallFeedback}>{props.nls('overallFeedback')}</Button></div>
           </div>
         </div>
       )

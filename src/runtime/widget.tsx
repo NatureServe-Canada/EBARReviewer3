@@ -19,6 +19,7 @@ import { type JimuQueriableLayerView, type JimuMapView, JimuMapViewComponent } f
 import FeatureFilter from 'esri/layers/support/FeatureFilter'
 import { Loading } from 'jimu-ui'
 import Graphic from 'esri/Graphic'
+import defaultMessages from './translations/default'
 
 const nslogo = require('../assets/ns_canada.png')
 /**
@@ -44,6 +45,11 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   // const [speciesTable, setSpeciesTable] = React.useState<__esri.FeatureLayer>(null)
   const [ecoshapeReviewTable, setEcoshapeReviewTable] = React.useState<__esri.FeatureLayer>(null)
   const [ecoshapeLayer, setEcoshapeLayer] = React.useState<__esri.FeatureLayer>(null)
+
+  const nls = (id: string) => {
+    return props.intl ? props.intl.formatMessage({ id: id, defaultMessage: defaultMessages[id] }) : id
+  }
+  console.log(nls("reviewSubmitted"))
 
   React.useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded && props.user.username) {
@@ -291,6 +297,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
               </div>
               {displaySpeciesOverview && (
                 <SpeciesOverview
+                  nls={nls}
                   taxa={taxa}
                   setActiveSpecie={setActiveSpecie}
                   activeSpecie={activeSpecie}
@@ -301,6 +308,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
               )}
               {displayOverallFeedback && (
                 <OverallFeedback
+                  nls={nls}
                   activeSpecie={activeSpecie}
                   setDisplayOverallFeedback={setDisplayOverallFeedback}
                   setDisplaySpeciesOverview={setDisplaySpeciesOverview}
@@ -311,6 +319,7 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
               )}
               {selectedEcoshapes && selectedEcoshapes.length > 0 && (
                 <EcoshapeMarkup
+                  nls={nls}
                   username={props.user.username}
                   selectedEcoshapes={selectedEcoshapes}
                   setSelectedEcoshapes={setSelectedEcoshapes}

@@ -1,10 +1,10 @@
 import { Button, Label, Radio, TextArea } from 'jimu-ui'
 import { type Specie, type SpecieFeedback } from './types'
-import defaultMessages from './translations/default'
 import { React } from 'jimu-core'
 import Graphic from 'esri/Graphic'
 
 export default function OverallFeedback(props: {
+  nls: (id: string) => string
   activeSpecie: Specie
   setDisplayOverallFeedback: React.Dispatch<React.SetStateAction<boolean>>
   setDisplaySpeciesOverview: React.Dispatch<React.SetStateAction<boolean>>
@@ -77,7 +77,7 @@ export default function OverallFeedback(props: {
     <div className='container p-0'>
       <div className='row border-bottom w-100 m-0'>
         <div className='col p-0'>
-          <h4>{defaultMessages.provideFeedBack}</h4>
+          <h4>{props.nls('provideFeedBack')}</h4>
         </div>
       </div>
       {
@@ -85,8 +85,8 @@ export default function OverallFeedback(props: {
           <div className='row pt-2 p-0 w-100 m-0'>
             <div className='p-0 w-100'>
               <b style={{ color: '#B80F0A' }}>
-                {defaultMessages.review_submitted}
-              </b>: {defaultMessages.reviewSubmitted}
+                {props.nls('review_submitted')}
+              </b>: {props.nls('reviewSubmitted')}
             </div>
           </div>
         )
@@ -95,7 +95,7 @@ export default function OverallFeedback(props: {
       <div className='row pt-2 p-0 w-100 m-0'>
         <div className='col p-0'>
           {/* radio button rating*/}
-          <Label className='m-0'>{defaultMessages.rating}:</Label>
+          <Label className='m-0'>{props.nls('rating')}:</Label>
           <div className='d-flex' role='radiogroup' aria-label={'Rating'} >
             <div className='d-flex align-items-center'>
               <Radio id="1star" name='radio1' className='mt-0 mb-0 m-2' checked={rating === 1} onChange={() => { setRating(1) }} />
@@ -131,7 +131,7 @@ export default function OverallFeedback(props: {
       <div className='row pt-2 p-0 w-100 m-0'>
         <div className='p-0 w-100'>
           <label>
-            {defaultMessages.overallComment}:
+            {props.nls('overallComment')}:
           </label>
           <TextArea
             value={comment}
@@ -142,13 +142,13 @@ export default function OverallFeedback(props: {
       </div>
       <div className='row row-cols-auto pt-2 p-0 w-100 m-0'>
         <div className='pr-2'>
-          <Button onClick={handleBackButtonChange}>{defaultMessages.back}</Button>
+          <Button onClick={handleBackButtonChange}>{props.nls('back')}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={saveOverallFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.save}</Button>
+          <Button onClick={saveOverallFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('save')}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={sumbitFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.Submit}</Button>
+          <Button onClick={sumbitFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('submit')}</Button>
         </div>
       </div>
     </div>

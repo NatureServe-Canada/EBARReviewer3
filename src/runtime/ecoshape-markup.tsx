@@ -1,10 +1,10 @@
 import { type DataSource, React } from 'jimu-core'
-import defaultMessages from './translations/default'
 import { type Presence, type Ecoshape, type EcoshapeReview, type Specie, type UsageType, type SpecieFeedback } from './types'
 import { Button, TextArea, Select, Option, Label } from 'jimu-ui'
 import Graphic from 'esri/Graphic'
 
 export default function EcoshapeMarkup(props: {
+  nls: (id: string) => string
   username: string
   selectedEcoshapes: Ecoshape[]
   setSelectedEcoshapes: React.Dispatch<React.SetStateAction<Ecoshape[]>>
@@ -32,24 +32,24 @@ export default function EcoshapeMarkup(props: {
   const [usageTypeMarkupSelect, setUsageTypeMarkupSelect] = React.useState<string>('')
 
   const presenceMarkupOptions = {
-    P: defaultMessages.present,
-    X: defaultMessages.presenceExpected,
-    H: defaultMessages.historical,
-    R: defaultMessages.remove
+    P: props.nls('present'),
+    X: props.nls('presenceExpected'),
+    H: props.nls('historical'),
+    R: props.nls('remove')
   }
 
   const removalReasonOptions = {
-    X: defaultMessages.removalReason1,
-    N: defaultMessages.removalReason2,
-    F: defaultMessages.removalReason3,
-    T: defaultMessages.removalReason4,
-    O: defaultMessages.removalReason5
+    X: props.nls('removalReason1'),
+    N: props.nls('removalReason2'),
+    F: props.nls('removalReason3'),
+    T: props.nls('removalReason4'),
+    O: props.nls('removalReason5')
   }
 
   const usageTypeMarkupOptions = {
-    B: defaultMessages.breeding,
-    P: defaultMessages.possibleBreeding,
-    N: defaultMessages.nonBreeding
+    B: props.nls('breeding'),
+    P: props.nls('possibleBreeding'),
+    N: props.nls('nonBreeding')
   }
 
   React.useEffect(() => {
@@ -321,7 +321,7 @@ export default function EcoshapeMarkup(props: {
         <>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <h4>{defaultMessages.ecoshapeName}: {props.selectedEcoshapes[0].ecoshapeName}</h4>
+              <h4>{props.nls('ecoshapeName')}: {props.selectedEcoshapes[0].ecoshapeName}</h4>
             </div>
           </div>
           <hr />
@@ -330,8 +330,8 @@ export default function EcoshapeMarkup(props: {
               <div className='row  p-0 w-100 m-0'>
                 <div className='col p-0'>
                   <b style={{ color: '#B80F0A' }}>
-                    {defaultMessages.review_submitted}
-                  </b>: {defaultMessages.reviewSubmitted}
+                    {props.nls('review_submitted')}
+                  </b>: {props.nls('reviewSubmitted')}
                 </div>
               </div>
             )
@@ -339,27 +339,27 @@ export default function EcoshapeMarkup(props: {
 
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.parentEcoregion}:</b> {props.selectedEcoshapes[0].parentEcoregion}
+              <b>{props.nls('parentEcoregion')}:</b> {props.selectedEcoshapes[0].parentEcoregion}
             </div>
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.ecozone}:</b> {props.selectedEcoshapes[0].ecozone}
+              <b>{props.nls('ecozone')}:</b> {props.selectedEcoshapes[0].ecozone}
             </div>
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.terrestrialArea}:</b> {props.selectedEcoshapes[0].terrestrialArea} km<sup>2</sup>
+              <b>{props.nls('terrestrialArea')}:</b> {props.selectedEcoshapes[0].terrestrialArea} km<sup>2</sup>
             </div>
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.terrestrialProportion}:</b> {props.selectedEcoshapes[0].terrestrialProportion}%
+              <b>{props.nls('terrestrialProportion')}:</b> {props.selectedEcoshapes[0].terrestrialProportion}%
             </div>
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.presence}:</b> {
+              <b>{props.nls('presence')}:</b> {
                 selectedPresenceRecords && selectedPresenceRecords.length !== 0
                   ? selectedPresenceRecords[0].presence
                   : null
@@ -368,7 +368,7 @@ export default function EcoshapeMarkup(props: {
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.usageType}:</b> {
+              <b>{props.nls('usageType')}:</b> {
                 selectedUsageTypeRecords && selectedUsageTypeRecords.length !== 0
                   ? selectedUsageTypeRecords[0].usageType
                   : null
@@ -377,12 +377,12 @@ export default function EcoshapeMarkup(props: {
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.ecoshapeSpecies}:</b> {props.activeSpecie.name}
+              <b>{props.nls('ecoshapeSpecies')}:</b> {props.activeSpecie.name}
             </div>
           </div>
           <div className='row  p-0 w-100 m-0'>
             <div className='col p-0'>
-              <b>{defaultMessages.metadata}:</b> {props.activeSpecie.rangeMetadata}
+              <b>{props.nls('metadata')}:</b> {props.activeSpecie.rangeMetadata}
             </div>
           </div>
         </>
@@ -393,7 +393,7 @@ export default function EcoshapeMarkup(props: {
           <>
             <div className='row p-0 w-100 m-0'>
               <div className='col p-0'>
-                <h4>{defaultMessages.multipleEcoshapes}</h4>
+                <h4>{props.nls('multipleEcoshapes')}</h4>
               </div>
             </div>
             <hr />
@@ -402,8 +402,8 @@ export default function EcoshapeMarkup(props: {
                 <div className='row  p-0 w-100 m-0'>
                   <div className='col p-0'>
                     <b style={{ color: '#B80F0A' }}>
-                      {defaultMessages.review_submitted}
-                    </b>: {defaultMessages.reviewSubmitted}
+                      {props.nls('review_submitted')}
+                    </b>: {props.nls('reviewSubmitted')}
                   </div>
                 </div>
               )
@@ -411,14 +411,14 @@ export default function EcoshapeMarkup(props: {
 
             <div className='row p-0 w-100 m-0'>
               <div className='col p-0'>
-                <b>{defaultMessages.warning}:</b> {defaultMessages.warning1}. {defaultMessages.warning2}.
+                <b>{props.nls('warning')}:</b> {props.nls('warning1')}. {props.nls('warning2')}.
               </div>
             </div>
           </>
         )
       }
       <div className='row pt-2 p-0 w-100 m-0'>
-        <Label className='pt-2 m-0'>{defaultMessages.presence} {defaultMessages.markup}</Label>
+        <Label className='pt-2 m-0'>{props.nls('presence')} {props.nls('markup')}</Label>
         <Select value={presenceMarkupSelect} onChange={handlePresenceMarkupChange}>
           {
             presenceMarkupOptions && Object.keys(presenceMarkupOptions).filter(key => {
@@ -443,24 +443,24 @@ export default function EcoshapeMarkup(props: {
               <Option value={key}>{presenceMarkupOptions[key]}</Option>
             ))
           }
-          <Option value={''}>{defaultMessages.noneSet}</Option>
+          <Option value={''}>{props.nls('noneSet')}</Option>
         </Select>
         {presenceMarkupSelect === 'R' && (
           <>
-            <Label className='pt-2 m-0'>{defaultMessages.removalReason} ({defaultMessages.required}):</Label>
+            <Label className='pt-2 m-0'>{props.nls('removalReason')} ({props.nls('required')}):</Label>
             <Select defaultValue={removalReasonSelect} onChange={(e) => { setRemovalReasonSelect(e.target.value) }}>
               {
                 removalReasonOptions && Object.keys(removalReasonOptions).map((key) => (
                   <Option value={key}>{removalReasonOptions[key]}</Option>
                 ))
               }
-              <Option value={''}>{defaultMessages.noneSet}</Option>
+              <Option value={''}>{props.nls('noneSet')}</Option>
             </Select>
           </>
         )}
         {props.activeSpecie.differentiateUsageType === 1 && (
           <>
-            <Label className='pt-2 m-0'>{defaultMessages.usageType} {defaultMessages.markup}</Label>
+            <Label className='pt-2 m-0'>{props.nls('usageType')} {props.nls('markup')}</Label>
             <Select value={usageTypeMarkupSelect} onChange={(e) => { setUsageTypeMarkupSelect(e.target.value) }} disabled={isUsageTypeMarkupDisabled}>
               {
                 usageTypeMarkupOptions && Object.keys(usageTypeMarkupOptions)
@@ -487,25 +487,25 @@ export default function EcoshapeMarkup(props: {
                     <Option value={key}>{usageTypeMarkupOptions[key]}</Option>
                   ))
               }
-              <Option value={''}>{defaultMessages.noneSet}</Option>
+              <Option value={''}>{props.nls('noneSet')}</Option>
             </Select>
           </>
         )}
-        <Label className='pt-2 m-0'>{defaultMessages.comment}:</Label>
+        <Label className='pt-2 m-0'>{props.nls('comment')}:</Label>
         <TextArea value={ecoshapeReviewComment} onChange={(e) => { setEcoshapeReviewComment(e.target.value) }} />
-        <Label className='pt-2 m-0'>{defaultMessages.reference}:</Label>
+        <Label className='pt-2 m-0'>{props.nls('reference')}:</Label>
         <TextArea value={reference} onChange={(e) => { setReference(e.target.value) }} />
 
       </div>
       <div className='row row-cols-auto pt-2 p-0 w-100 m-0'>
         <div className='pr-2'>
-          <Button onClick={handleBackButton}>{defaultMessages.back}</Button>
+          <Button onClick={handleBackButton}>{props.nls('back')}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleDeleteButton} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.delete}</Button>
+          <Button onClick={handleDeleteButton} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('delete')}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleSaveButton} disabled={props.specieFeedback.dateCompleted !== null}>{defaultMessages.save}</Button>
+          <Button onClick={handleSaveButton} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('save')}</Button>
         </div>
       </div>
     </div >
