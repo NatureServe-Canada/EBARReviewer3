@@ -309,7 +309,7 @@ export default function EcoshapeMarkup(props: {
     if (e.target.value !== 'R') {
       setRemovalReasonSelect('')
     }
-    if (e.target.value === 'R') {
+    if (e.target.value === 'R' || e.target.value === '') {
       setUsageTypeMarkupSelect('')
     }
     setPresenceMarkupSelect(e.target.value)

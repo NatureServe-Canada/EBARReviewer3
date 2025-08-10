@@ -149,7 +149,7 @@ export default function OverallFeedback(props: {
           <Button onClick={saveOverallFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('save')}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={sumbitFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('submit')}</Button>
+          <Button onClick={sumbitFeedback} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('Submit')}</Button>
         </div>
       </div>
     </div>
