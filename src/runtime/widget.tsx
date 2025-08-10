@@ -49,7 +49,6 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
   const nls = (id: string) => {
     return props.intl ? props.intl.formatMessage({ id: id, defaultMessage: defaultMessages[id] }) : id
   }
-  console.log(nls("reviewSubmitted"))
 
   React.useEffect(() => {
     if (jimuMapView && jimuMapView.status === JimuMapViewStatus.Loaded && props.user.username) {

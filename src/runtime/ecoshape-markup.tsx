@@ -216,7 +216,7 @@ export default function EcoshapeMarkup(props: {
       for (let i = 0; i < insertecoshapeIDs.length; i++) {
         const temp = JSON.parse(JSON.stringify(attributes))
 
-        if ((temp.markup === 'R' || !temp.markup) && !rangeMapEcoshapeIDs.includes(insertecoshapeIDs[i])) continue
+        if ((temp.markup === 'R') && !rangeMapEcoshapeIDs.includes(insertecoshapeIDs[i])) continue
 
         const currentPresenceRecord = selectedPresenceRecords.find(r => r.ecoshapeID === insertecoshapeIDs[i])
         if (currentPresenceRecord && currentPresenceRecord.presence === temp.markup) {
