@@ -37,7 +37,7 @@ export default function SpeciesOverview(props: {
                 </Option>,
                 ...group.species.map((specie, specieIndex) => (
                   <Option key={`${group.name}-${specie.name}`} value={specie.name}>
-                    {specie.name}
+                    {`${specie.name} (${specie.rangeVersion} - ${specie.rangeStage} - ${specie.rangeMapScope})`}
                   </Option>
                 ))
               ]
