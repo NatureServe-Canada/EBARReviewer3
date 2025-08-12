@@ -2,7 +2,7 @@
 
 ## Setup
 1. Download and install ArcGIS Experience Builder [Developer Edition](https://developers.arcgis.com/experience-builder/guide/downloads/).
-2. Novigate to the `client/your-extensions/widgets/` folder and clone the repository.
+2. Navigate to the `client/your-extensions/widgets/` folder and clone the repository.
 3. Follow the instructions in the [installation guide](https://developers.arcgis.com/experience-builder/guide/install-and-configure/) to run the widget.
 
 ## Usage
