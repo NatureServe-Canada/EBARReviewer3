@@ -5,7 +5,14 @@
 2. Navigate to the `client/your-extensions/widgets/` folder and clone the repository.
 3. Follow the instructions in the [installation guide](https://developers.arcgis.com/experience-builder/guide/install-and-configure/) to run the widget.
 
-## Usage
-1. Open the Experience Builder and create a new project.
-2. Add Map widget to the canvas and select the EBARReviewer3 map.
-3. Add the EBARReviewer3 widget to the canvas and select the EBARReviewer3 map.
+## Configuration
+1. Add the Map widget and select the EBARReviewer3 map as the data source.
+2. Add the Select widget and configure it as follows:
+    - Go to the Content tab.
+    - Under Source, select "Interact with a Map widget" radio button.
+    - Choose the EBARReviewer3 map
+    - Select only the Ecoshapes (generalized) layer.
+3. Add the EBARReviewer3 widget to the canvas and configure it as follows:
+    - Go to the Content tab.
+    - Enable "Connect to data" toggle.
+    - Select the Ecoshapes (generalized) layer from the EBARReviewer3 map.
