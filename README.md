@@ -16,3 +16,8 @@
     - Go to the Content tab.
     - Enable "Connect to data" toggle.
     - Select the Ecoshapes (generalized) layer from the EBARReviewer3 map.
+
+## Build
+1. Go to `client/your-extensions/widgets/` folder and run `npm run build:prod` to build the widget for production.
+2. The compiled widget appears in the client/dist-prod/widgets directory.
+
