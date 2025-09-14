@@ -2,6 +2,23 @@ import React from 'react'
 import { Select, Option, Button } from 'jimu-ui'
 import { type Taxon, type Specie, type SpecieFeedback } from './types'
 
+// Helper to sort case-insensitively
+const sortByName = <T extends { name: string }>(a: T, b: T) =>
+  a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+
+function sortTaxon(taxon: Taxon): Taxon {
+  return {
+    ...taxon,
+    species: [...taxon.species].sort(sortByName)
+  }
+}
+
+function sortTaxa(taxa: Taxon[]): Taxon[] {
+  return [...taxa]
+    .sort(sortByName) // sort taxa themselves
+    .map(sortTaxon) // also sort species inside each taxon
+}
+
 export default function SpeciesOverview(props: {
   nls: (id: string) => string
   taxa: Taxon[]
@@ -29,7 +46,7 @@ export default function SpeciesOverview(props: {
       <div className='row'>
         <div className='col p-0'>
           <Select value={props.activeSpecie?.name} placeholder={props.nls('selectSpecies')} onChange={handleSelectChange}>
-            {props.taxa.map((group, groupIndex) => {
+            {sortTaxa(props.taxa).map((group, groupIndex) => {
               // Generate header and items
               const groupElements = [
                 <Option key={`${group.name}-header`} header>
