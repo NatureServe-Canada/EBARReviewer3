@@ -1,7 +1,7 @@
 export default {
   // selectTaxa: "Select Taxa",
   // selectSpecies: "Select Species",
-  selectSpecies: 'Select a specie',
+  selectSpecies: 'Select a species',
   reviewSubmitted: 'Additional markup and feedback for this range map are not allowed.',
   review_submitted: 'REVIEW SUBMITTED',
   rangeVersion: 'Range Version',

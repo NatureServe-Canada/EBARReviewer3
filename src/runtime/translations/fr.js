@@ -1,6 +1,6 @@
 System.register([], function (_export) {return {execute: function () {_export({
     // selectTaxa: "Sélectionner des taxons",
-    selectSpecies: "Sélectionnez une espèce",
+    selectSpecies: "Sélectionnez une espèces",
     reviewSubmitted: "Les changements et commentaires supplémentaires pour cette carte ne sont plus autorisés.",
     review_submitted: "REVISION SOUMISE",
     rangeVersion: "Version de la carte",
