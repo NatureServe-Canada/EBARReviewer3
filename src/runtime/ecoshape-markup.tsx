@@ -205,6 +205,13 @@ export default function EcoshapeMarkup(props: {
         }
 
         temp.objectid = selectedEcoshapeReviewRecords[i].objectID
+        // delete null attributes
+        // Object.keys(temp).forEach(key => {
+        //   if (temp[key] === null) {
+        //     delete temp[key]
+        //   }
+        // })
+        console.log('temp', temp)
         graphicObjs.push(new Graphic({ attributes: temp }))
       }
       applyEditsPromises.push(props.ecoshapeReviewTable.applyEdits({ updateFeatures: graphicObjs }))
