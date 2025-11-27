@@ -31,10 +31,10 @@ export enum DataSourceLabel {
   USAGE_TYPE = 'Usage Type',
   PRESENCE_MARKUP = 'Presence Markup',
   PRESENCE = 'Species Range Ecoshapes (generalized)',
-  REVIEW = 'Review',
-  SPECIES = 'ReviewRangeMapSpecies',
+  REVIEW = 'ReviewerApp2C - Review',
+  SPECIES = 'ReviewerApp2C - ReviewRangeMapSpecies',
   ECOSHAPE = 'Ecoshapes (generalized)',
-  ECOSHAPE_REVIEW = 'EcoshapeReview'
+  ECOSHAPE_REVIEW = 'ReviewerApp2C - EcoshapeReview'
 }
 
 export interface EcoshapeReview {
