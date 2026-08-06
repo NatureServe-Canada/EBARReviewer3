@@ -166,18 +166,18 @@ const Widget = (props: AllWidgetProps<{ [key: string]: never }>) => {
       // })
 
       presenceLayer.definitionExpression = `rangemapid=${activeSpecie.rangeMapID}`
-      // extentPromises.push(presenceLayer.queryExtent())
+      extentPromises.push(presenceLayer.queryExtent())
       presenceMarkupLayer.definitionExpression = `reviewid=${activeSpecie.reviewID} and markup is not null`
-      // extentPromises.push(presenceMarkupLayer.queryExtent())
-      // Promise.all(extentPromises).then((results) => {
-      //   let extent = null
-      //   if (results[1].count === 0) {
-      //     extent = results[0].extent
-      //   } else {
-      //     extent = results[0].extent.union(results[1].extent)
-      //   }
-      //   jimuMapView.view.goTo(extent)
-      // })
+      extentPromises.push(presenceMarkupLayer.queryExtent())
+      Promise.all(extentPromises).then((results) => {
+        let extent = null
+        if (results[1].count === 0) {
+          extent = results[0].extent
+        } else {
+          extent = results[0].extent.union(results[1].extent)
+        }
+        jimuMapView.view.goTo(extent)
+      })
       if (activeSpecie.differentiateUsageType === 1) {
         usageTypeLayer.definitionExpression = `rangemapid=${activeSpecie.rangeMapID}`
         usageTypeMarkupLayer.definitionExpression = `reviewid=${activeSpecie.reviewID}`
