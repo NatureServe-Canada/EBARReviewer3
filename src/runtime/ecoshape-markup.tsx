@@ -509,7 +509,7 @@ export default function EcoshapeMarkup(props: {
           <Button onClick={handleBackButton}>{props.nls('back')}</Button>
         </div>
         <div className='pr-2'>
-          <Button onClick={handleDeleteButton} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('delete')}</Button>
+          <Button onClick={handleDeleteButton} disabled={props.specieFeedback.dateCompleted !== null || selectedEcoshapeReviewRecords.length === 0}>{props.nls('delete')}</Button>
         </div>
         <div className='pr-2'>
           <Button onClick={handleSaveButton} disabled={props.specieFeedback.dateCompleted !== null}>{props.nls('save')}</Button>
